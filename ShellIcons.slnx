@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/samples/">
+    <Project Path="samples/ShellIcons.Blazor.Sample/ShellIcons.Blazor.Sample.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/ShellIcons.Blazor/ShellIcons.Blazor.csproj" />
+    <Project Path="src/ShellIcons.Generator/ShellIcons.Generator.csproj" />
+  </Folder>
+</Solution>
