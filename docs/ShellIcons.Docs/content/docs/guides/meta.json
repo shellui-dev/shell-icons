@@ -1,0 +1,10 @@
+{
+  "title": "Guides",
+  "pages": [
+    "sizing-and-stroke",
+    "color-and-theming",
+    "accessibility",
+    "custom-icons",
+    "typed-vs-dispatcher"
+  ]
+}

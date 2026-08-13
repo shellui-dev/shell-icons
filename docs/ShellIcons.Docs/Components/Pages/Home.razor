@@ -1,0 +1,260 @@
+@page "/"
+@layout HomeLayout
+@using ShellDocs.Components
+@using ShellDocs.Components.Chrome
+@using ShellDocs.Components.Layouts
+@using ShellIcons
+@using ShellIcons.Icons
+
+<PageTitle>ShellIcons — Lucide icons for Blazor</PageTitle>
+
+<div class="hero">
+    <div class="hero-badge">
+        <span>v0.1.0-alpha</span>
+        <span class="dot">·</span>
+        <span>@ShellIcon.Names.Count icons</span>
+        <span class="dot">·</span>
+        <span>net8, net9, net10</span>
+    </div>
+    <h1>
+        <span class="grad">Lucide</span> icons for <span class="grad">Blazor</span>.
+    </h1>
+    <p class="hero-tagline">
+        1,555 tree-shakeable, typed SVG icons. Zero JS, zero required CSS.
+        One <code>dotnet add</code> away.
+    </p>
+
+    <div class="hero-cta">
+        <a href="/docs/getting-started/installation" class="btn primary">
+            <span>Get started</span>
+            <ChevronRight Size="16" />
+        </a>
+        <a href="/icons" class="btn ghost">
+            <Search Size="16" />
+            <span>Browse @ShellIcon.Names.Count icons</span>
+        </a>
+    </div>
+
+    <pre class="install"><code>dotnet add package ShellIcons.Blazor</code></pre>
+</div>
+
+<div class="showcase">
+    <div class="showcase-strip">
+        @foreach (var name in _highlight)
+        {
+            <span class="showcase-icon" title="@name">
+                <ShellIcon Name="@name" Size="28" />
+            </span>
+        }
+    </div>
+</div>
+
+<div class="features">
+    <div class="feature">
+        <div class="feature-icon"><Zap Size="20" /></div>
+        <h2>Zero runtime overhead</h2>
+        <p>Icons compile to inline <code>&lt;svg&gt;</code>. No JS, no CSS import, no CDN, no config.</p>
+    </div>
+    <div class="feature">
+        <div class="feature-icon"><Palette Size="20" /></div>
+        <h2>CSS-native theming</h2>
+        <p>Every icon uses <code>currentColor</code>. Set <code>color</code> on any ancestor — dark mode, brand palettes, and per-component tints all inherit for free.</p>
+    </div>
+    <div class="feature">
+        <div class="feature-icon"><Sparkles Size="20" /></div>
+        <h2>Typed &amp; tree-shakeable</h2>
+        <p>Every icon is its own C# type. Blazor's trimmer keeps only the ones you use — pay for what you render.</p>
+    </div>
+    <div class="feature">
+        <div class="feature-icon"><Repeat Size="20" /></div>
+        <h2>Stays in sync with Lucide</h2>
+        <p>A Roslyn source generator regenerates the entire catalog from vendored SVGs. Bump <code>LUCIDE_VERSION.txt</code>, rebuild, done.</p>
+    </div>
+    <div class="feature">
+        <div class="feature-icon"><FolderPlus Size="20" /></div>
+        <h2>Drop-in custom icons</h2>
+        <p>Add your own SVGs to <code>catalog/custom/icons/</code> — same 24×24 stroke contract, same compile pipeline, same namespace.</p>
+    </div>
+    <div class="feature">
+        <div class="feature-icon"><ShieldCheck Size="20" /></div>
+        <h2>Accessibility done right</h2>
+        <p>Decorative by default. Add <code>Title</code> for a proper <code>role="img"</code> + <code>&lt;title&gt;</code> that screen readers announce.</p>
+    </div>
+</div>
+
+<DocsFooter Version="0.1.0-alpha" />
+
+<style>
+    .hero {
+        max-width: 44rem;
+        margin: 4rem auto 3rem;
+        padding: 0 1.5rem;
+        text-align: center;
+    }
+    .hero-badge {
+        display: inline-flex;
+        gap: 0.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        padding: 0.35rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        margin-bottom: 1.5rem;
+    }
+    .hero-badge .dot { opacity: 0.4; }
+
+    .hero h1 {
+        font-size: clamp(2.25rem, 5vw, 3.5rem);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        margin: 0 0 1rem;
+        line-height: 1.05;
+    }
+    .grad {
+        background: linear-gradient(135deg, var(--foreground), color-mix(in oklch, var(--foreground) 55%, transparent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .hero-tagline {
+        color: var(--muted-foreground);
+        font-size: 1.05rem;
+        line-height: 1.6;
+        margin: 0 auto 2rem;
+        max-width: 32rem;
+    }
+    .hero code {
+        font-family: var(--font-mono);
+        font-size: 0.85em;
+        background: var(--muted);
+        padding: 0.1rem 0.4rem;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+    }
+
+    .hero-cta {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.65rem 1.25rem;
+        border-radius: 9999px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: background 150ms, border-color 150ms, transform 150ms;
+    }
+    .btn.primary {
+        background: var(--primary, var(--foreground));
+        color: var(--primary-foreground, var(--background));
+    }
+    .btn.primary:hover { background: color-mix(in oklch, var(--foreground) 85%, transparent); }
+    .btn.ghost {
+        background: transparent;
+        color: var(--foreground);
+        border: 1px solid var(--border);
+    }
+    .btn.ghost:hover { background: var(--muted); }
+
+    .install {
+        display: inline-block;
+        margin: 0 auto;
+        padding: 0.75rem 1.25rem;
+        background: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        color: var(--foreground);
+    }
+
+    .showcase {
+        max-width: 60rem;
+        margin: 0 auto 4rem;
+        padding: 0 1.5rem;
+    }
+    .showcase-strip {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        padding: 2rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+    }
+    .showcase-icon {
+        color: var(--muted-foreground);
+        transition: color 200ms, transform 200ms;
+    }
+    .showcase-icon:hover {
+        color: var(--foreground);
+        transform: translateY(-2px);
+    }
+
+    .features {
+        max-width: 60rem;
+        margin: 0 auto 5rem;
+        padding: 0 1.5rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    @@media (min-width: 640px) { .features { grid-template-columns: repeat(2, 1fr); } }
+    @@media (min-width: 960px) { .features { grid-template-columns: repeat(3, 1fr); } }
+
+    .feature {
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) + 2px);
+        background: var(--card);
+    }
+    .feature-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 8px;
+        background: var(--muted);
+        color: var(--foreground);
+        margin-bottom: 0.75rem;
+    }
+    .feature h2 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0 0 0.4rem;
+        letter-spacing: -0.01em;
+    }
+    .feature p {
+        margin: 0;
+        color: var(--muted-foreground);
+        font-size: 0.9rem;
+        line-height: 1.55;
+    }
+    .feature code {
+        font-family: var(--font-mono);
+        font-size: 0.85em;
+        background: var(--muted);
+        padding: 0.1rem 0.4rem;
+        border-radius: 4px;
+    }
+</style>
+
+@code {
+    private static readonly string[] _highlight = new[]
+    {
+        "zap", "rocket", "heart", "star", "sparkles", "flame",
+        "cloud", "sun", "moon", "compass", "map", "camera",
+        "coffee", "pizza", "ghost", "cat", "crown", "gift"
+    };
+}

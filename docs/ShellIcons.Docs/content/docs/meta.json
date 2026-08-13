@@ -1,0 +1,9 @@
+{
+  "title": "Docs",
+  "pages": [
+    "introduction",
+    "getting-started",
+    "guides",
+    "reference"
+  ]
+}

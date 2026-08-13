@@ -1,0 +1,35 @@
+@namespace ShellIcons.Docs.Preview
+
+@* Simple flex-row wrapper for razor:preview blocks that showcase multiple icons.
+   ShellDocs's razor:preview fences require a registered component as the outer
+   tag — a bare <div> won't resolve — so this exists to be that outer component. *@
+<div class="preview-row" style="@_style">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Gap between children (default 1rem).</summary>
+    [Parameter] public string Gap { get; set; } = "1rem";
+
+    /// <summary>Vertical alignment: <c>center</c>, <c>end</c>, <c>start</c>, <c>baseline</c>.</summary>
+    [Parameter] public string Align { get; set; } = "center";
+
+    /// <summary>Justify content: <c>start</c>, <c>center</c>, <c>space-between</c>, etc.</summary>
+    [Parameter] public string Justify { get; set; } = "start";
+
+    /// <summary>Optional inline color to set on the row (icons inherit via currentColor).</summary>
+    [Parameter] public string? Color { get; set; }
+
+    /// <summary>Optional font-size (useful for em-based icon sizing).</summary>
+    [Parameter] public string? FontSize { get; set; }
+
+    private string _style => new System.Text.StringBuilder(120)
+        .Append("display:flex;flex-wrap:wrap;gap:").Append(Gap)
+        .Append(";align-items:").Append(Align)
+        .Append(";justify-content:").Append(Justify)
+        .Append(Color is null ? "" : $";color:{Color}")
+        .Append(FontSize is null ? "" : $";font-size:{FontSize}")
+        .ToString();
+}

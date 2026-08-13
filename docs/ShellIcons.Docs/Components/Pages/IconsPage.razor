@@ -1,0 +1,214 @@
+@page "/icons"
+@layout ShellDocs.Components.Layouts.DocsLayout
+@using ShellIcons
+
+<PageTitle>Browse icons — @_names.Count total — ShellIcons</PageTitle>
+
+<section class="icons-hero">
+    <h1>Browse the catalog</h1>
+    <p>
+        Every icon in ShellIcons — <strong>@_names.Count</strong> icons from Lucide @LucideVersion.
+        Type to filter by name.
+    </p>
+    <div class="icons-search">
+        <input id="icon-search"
+               type="search"
+               placeholder="Search icons — try 'arrow', 'circle', 'file'…"
+               autocomplete="off"
+               spellcheck="false"
+               aria-label="Search icons" />
+        <span class="icons-count" id="icon-count">@_names.Count</span>
+    </div>
+</section>
+
+<div id="icon-grid" class="icon-grid" role="list">
+    @foreach (var name in _names)
+    {
+        <button type="button"
+                class="icon-cell"
+                role="listitem"
+                data-name="@name"
+                title="@name"
+                onclick="copyIconSnippet(this)">
+            <ShellIcon Name="@name" Size="24" />
+            <span class="icon-name">@name</span>
+        </button>
+    }
+</div>
+
+<div id="empty-state" class="icons-empty" hidden>
+    <p>No icons match <code id="empty-query"></code>.</p>
+    <p>Try a shorter search, or open an <a href="https://github.com/lucide-icons/lucide/issues/new">issue against Lucide</a> if the icon you want doesn't exist yet.</p>
+</div>
+
+<div id="copy-toast" class="copy-toast" hidden role="status" aria-live="polite">Copied!</div>
+
+<style>
+    .icons-hero { margin: 2rem 0 1.5rem; }
+    .icons-hero h1 { font-size: 2rem; margin: 0 0 0.5rem; letter-spacing: -0.025em; }
+    .icons-hero p { color: var(--muted-foreground); margin: 0 0 1rem; }
+
+    .icons-search {
+        position: relative;
+        display: flex;
+        align-items: center;
+        max-width: 32rem;
+    }
+    .icons-search input {
+        flex: 1;
+        padding: 0.6rem 3.5rem 0.6rem 0.9rem;
+        font: inherit;
+        color: var(--foreground);
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        outline: none;
+        transition: border-color 120ms, box-shadow 120ms;
+    }
+    .icons-search input:focus {
+        border-color: var(--ring, var(--foreground));
+        box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring, var(--foreground)) 20%, transparent);
+    }
+    .icons-count {
+        position: absolute;
+        right: 0.7rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        background: var(--muted);
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+    }
+
+    .icon-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+        gap: 6px;
+        margin: 1.5rem 0 3rem;
+    }
+    .icon-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 6px;
+        min-height: 90px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--card);
+        color: var(--foreground);
+        font: inherit;
+        cursor: copy;
+        transition: background 120ms, border-color 120ms, transform 120ms;
+    }
+    .icon-cell:hover {
+        background: var(--accent, var(--muted));
+        border-color: color-mix(in oklch, var(--foreground) 20%, var(--border));
+        transform: translateY(-1px);
+    }
+    .icon-cell[hidden] { display: none; }
+    .icon-name {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--muted-foreground);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        white-space: nowrap;
+    }
+
+    .icons-empty {
+        padding: 2rem 1rem;
+        text-align: center;
+        color: var(--muted-foreground);
+        border: 1px dashed var(--border);
+        border-radius: 8px;
+        margin: 1rem 0 3rem;
+    }
+    .icons-empty code { font-family: var(--font-mono); background: var(--muted); padding: 0.1rem 0.4rem; border-radius: 4px; }
+
+    .copy-toast {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0.5rem 1rem;
+        background: var(--foreground);
+        color: var(--background);
+        border-radius: 999px;
+        font-size: 0.85rem;
+        z-index: 100;
+        opacity: 0;
+        transition: opacity 150ms;
+    }
+    .copy-toast.show { opacity: 1; }
+</style>
+
+<script>
+    (function () {
+        const input = document.getElementById('icon-search');
+        const grid = document.getElementById('icon-grid');
+        const empty = document.getElementById('empty-state');
+        const emptyQuery = document.getElementById('empty-query');
+        const count = document.getElementById('icon-count');
+        const cells = Array.from(grid.querySelectorAll('.icon-cell'));
+        const total = cells.length;
+
+        function filter() {
+            const q = input.value.trim().toLowerCase();
+            let visible = 0;
+            for (const cell of cells) {
+                const name = cell.dataset.name;
+                const match = !q || name.includes(q);
+                cell.hidden = !match;
+                if (match) visible++;
+            }
+            count.textContent = q ? visible + ' / ' + total : total;
+            empty.hidden = visible !== 0;
+            if (visible === 0) emptyQuery.textContent = q;
+        }
+
+        let raf = 0;
+        input.addEventListener('input', () => {
+            if (raf) cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(filter);
+        });
+
+        // Focus the search when user starts typing anywhere on the page
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && document.activeElement !== input) {
+                e.preventDefault();
+                input.focus();
+            }
+        });
+    })();
+
+    function copyIconSnippet(cell) {
+        const name = cell.dataset.name;
+        const pascal = name.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join('');
+        const snippet = '<' + pascal + ' />';
+        navigator.clipboard?.writeText(snippet).then(() => {
+            const toast = document.getElementById('copy-toast');
+            toast.textContent = 'Copied: ' + snippet;
+            toast.hidden = false;
+            requestAnimationFrame(() => toast.classList.add('show'));
+            clearTimeout(window.__toastTimer);
+            window.__toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => (toast.hidden = true), 200);
+            }, 1500);
+        });
+    }
+</script>
+
+@code {
+    private const string LucideVersion = "0.475.0";
+
+    private IReadOnlyList<string> _names = Array.Empty<string>();
+
+    protected override void OnInitialized()
+    {
+        _names = ShellIcon.Names.OrderBy(n => n, StringComparer.Ordinal).ToArray();
+    }
+}
