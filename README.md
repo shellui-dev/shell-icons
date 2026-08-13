@@ -11,16 +11,19 @@ See [SHELLICONS.md](SHELLICONS.md) for the full design proposal.
 
 ## Status
 
-**Phase 2 complete — full Lucide 0.475.0 catalog (1555 icons) auto-generated for Blazor.**
+**Docs live in dev, Phase 2 complete — full Lucide 0.475.0 catalog (1555 icons) auto-generated for Blazor.**
 
 - [x] Design doc
 - [x] Solution scaffold
-- [x] Blazor `IconCore` + hand-generated proof-of-concept icons
-- [x] Blazor sample app
+- [x] Blazor `IconCore` with Size/StrokeWidth/Class/Title/AbsoluteStroke props
 - [x] Lucide catalog sync script (pinned via `LUCIDE_VERSION.txt`)
 - [x] `catalog/custom/` drop-in path for repo-owned icons
 - [x] Roslyn incremental source generator — reads both `catalog/lucide/` and `catalog/custom/`, emits 1555 typed components + `ShellIcon` dispatcher
-- [ ] Trim smoke test in CI (~1 day)
+- [x] Test suite: 46 unit + integration tests (xUnit + bUnit)
+- [x] Docs site at [docs/ShellIcons.Docs](docs/ShellIcons.Docs) — ShellDocs-powered, runs at `dotnet run` on http://localhost:5145
+- [x] Live icon browser at `/icons` — searchable, 1555-cell grid with click-to-copy
+- [x] GH Pages workflow + `CNAME` for [shellicons.shellui.dev](https://shellicons.shellui.dev)
+- [ ] Blocker: `shelldocs.cli 0.1.3-alpha build` doesn't emit `index.html` or the WASM runtime — GH Pages deploy waits on a CLI fix upstream
 - [ ] Publish `ShellIcons.Blazor 0.1.0-alpha` to NuGet (Phase 3)
 - [ ] Avalonia target (Phase 4)
 - [ ] MAUI target (Phase 5)
@@ -73,7 +76,7 @@ shell-icons/
 ├── SHELLICONS.md              design proposal
 ├── LUCIDE_VERSION.txt         pinned upstream tag
 ├── NOTICE.md                  Lucide ISC attribution
-├── ShellIcons.sln
+├── ShellIcons.slnx
 ├── Directory.Build.props
 ├── catalog/
 │   ├── lucide/icons/          vendored Lucide SVGs (populated by sync-lucide.ps1)
@@ -83,10 +86,29 @@ shell-icons/
 ├── scripts/
 │   └── sync-lucide.ps1        refresh vendored Lucide catalog
 ├── src/
-│   └── ShellIcons.Blazor/     Razor Class Library
-└── samples/
-    └── ShellIcons.Blazor.Sample/
+│   ├── ShellIcons.Blazor/     Razor Class Library (net8.0;net9.0)
+│   └── ShellIcons.Generator/  Roslyn incremental source generator (netstandard2.0)
+├── tests/
+│   ├── ShellIcons.Generator.Tests/   xUnit: SvgParser, Naming
+│   └── ShellIcons.Blazor.Tests/       xUnit + bUnit: IconCore, generated icons, dispatcher
+├── docs/
+│   └── ShellIcons.Docs/       ShellDocs site — dev at http://localhost:5145
+└── .github/workflows/
+    └── docs.yml               GH Pages deploy pipeline (waits on shelldocs.cli fix)
 ```
+
+## Docs
+
+Run the docs locally:
+
+```bash
+cd docs/ShellIcons.Docs
+dotnet run
+```
+
+Serves at http://localhost:5145. Pages live in `docs/ShellIcons.Docs/content/docs/*.md`. Live component previews via `razor:preview` code fences work out of the box.
+
+The `/icons` route is a searchable browser of the entire catalog with click-to-copy component names.
 
 ## Refreshing the Lucide catalog
 

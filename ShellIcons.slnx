@@ -4,11 +4,15 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Folder Name="/samples/">
-    <Project Path="samples/ShellIcons.Blazor.Sample/ShellIcons.Blazor.Sample.csproj" />
+  <Folder Name="/docs/">
+    <Project Path="docs/ShellIcons.Docs/ShellIcons.Docs.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/ShellIcons.Blazor/ShellIcons.Blazor.csproj" />
     <Project Path="src/ShellIcons.Generator/ShellIcons.Generator.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ShellIcons.Blazor.Tests/ShellIcons.Blazor.Tests.csproj" />
+    <Project Path="tests/ShellIcons.Generator.Tests/ShellIcons.Generator.Tests.csproj" />
   </Folder>
 </Solution>
