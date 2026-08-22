@@ -23,8 +23,9 @@ See [SHELLICONS.md](SHELLICONS.md) for the full design proposal.
 - [x] Docs site at [docs/ShellIcons.Docs](docs/ShellIcons.Docs) — ShellDocs-powered, runs at `dotnet run` on http://localhost:5145
 - [x] Live icon browser at `/icons` — searchable, 1555-cell grid with click-to-copy
 - [x] GH Pages workflow + `CNAME` for [shellicons.shellui.dev](https://shellicons.shellui.dev)
-- [ ] Blocker: `shelldocs.cli 0.1.3-alpha build` doesn't emit `index.html` or the WASM runtime — GH Pages deploy waits on a CLI fix upstream
-- [ ] Publish `ShellIcons.Blazor 0.1.0-alpha` to NuGet (Phase 3)
+- [x] CI + Release pipelines — see [RELEASING.md](RELEASING.md) for the runbook
+- [ ] Blocker: `shelldocs.cli` build doesn't emit `index.html` or the WASM runtime — GH Pages deploy waits on a CLI fix upstream
+- [ ] First publish `ShellIcons.Blazor 0.1.0-alpha` to NuGet — bump version, tag `v0.1.0-alpha`, approve in the Actions UI
 - [ ] Avalonia target (Phase 4)
 - [ ] MAUI target (Phase 5)
 

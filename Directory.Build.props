@@ -1,11 +1,56 @@
 <Project>
 
+  <!-- Language + compilation defaults -->
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591</NoWarn>
+    <NoWarn>$(NoWarn);1591</NoWarn> <!-- suppress "missing XML doc comment" -->
+  </PropertyGroup>
+
+  <!-- Version. Bump here before tagging a release. See RELEASING.md. -->
+  <PropertyGroup>
     <Version>0.1.0-alpha</Version>
   </PropertyGroup>
+
+  <!-- Package metadata (applies to any project with IsPackable=true) -->
+  <PropertyGroup>
+    <Authors>shellui-dev</Authors>
+    <Company>ShellUI</Company>
+    <Copyright>Copyright © 2026 ShellUI</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/shellui-dev/shell-icons</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/shellui-dev/shell-icons</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>blazor;icons;svg;lucide;razor;shellui</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <!-- Symbols + Source Link — enables source-stepping in consumers' debuggers -->
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DeterministicSourcePaths Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</DeterministicSourcePaths>
+  </PropertyGroup>
+
+  <!-- Default: nothing is packable unless the project opts in -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!-- Auto-include the repo README + NOTICE in every packable project -->
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)NOTICE.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- Source Link package (GitHub) — added to every packable project -->
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
 
 </Project>
