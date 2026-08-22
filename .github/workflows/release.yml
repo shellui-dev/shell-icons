@@ -1,0 +1,132 @@
+name: Release
+
+# Fires on any v*.*.* tag push (and prerelease suffixes -alpha/-beta/-rc).
+# Version comes from Directory.Build.props — bump it BEFORE tagging.
+# Publishes via NuGet Trusted Publishing (OIDC — no long-lived API key stored).
+# See RELEASING.md for the full runbook including the one-time nuget.org policy setup.
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Pack and validate only — skip nuget push and GH release"
+        type: boolean
+        default: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: write        # for creating the GitHub Release
+      id-token: write        # required for Trusted Publishing OIDC exchange
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0     # SourceLink needs full history for accurate commit metadata
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Install net8 + net9 runtimes
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      - name: Restore
+        run: dotnet restore ShellIcons.slnx
+
+      - name: Build
+        run: dotnet build ShellIcons.slnx --configuration Release --no-restore
+        env:
+          ContinuousIntegrationBuild: true
+
+      - name: Test
+        run: dotnet test ShellIcons.slnx --configuration Release --no-build --verbosity normal
+
+      - name: Pack
+        run: dotnet pack src/ShellIcons.Blazor/ShellIcons.Blazor.csproj --configuration Release --no-build --output nupkgs
+        env:
+          ContinuousIntegrationBuild: true
+
+      - name: List produced packages
+        run: ls -la nupkgs/
+
+      # ─── Consistency check: tag must match Directory.Build.props version ───
+      # A common mistake is tagging v0.2.0 while the props file still says
+      # 0.1.0-alpha. The produced .nupkg would be 0.1.0-alpha — surprising
+      # anyone who trusted the tag. Fail loud so the human bumps or re-tags.
+      - name: Verify tag matches Directory.Build.props version
+        if: github.event_name == 'push'
+        run: |
+          version=$(grep -oE '<Version>[^<]+' Directory.Build.props | head -1 | sed 's/<Version>//')
+          tag="${GITHUB_REF#refs/tags/v}"
+          echo "Directory.Build.props version: $version"
+          echo "Git tag (minus leading v):    $tag"
+          if [ "$version" != "$tag" ]; then
+            echo "ERROR: tag ($tag) does not match Directory.Build.props version ($version)."
+            echo "Either bump the version in Directory.Build.props and re-tag,"
+            echo "or delete the tag and re-tag with v$version."
+            exit 1
+          fi
+
+      # ─── Pre-push safety: refuse if the version is already on nuget.org ───
+      # NuGet locks version numbers permanently after first publish. Without
+      # this check, `--skip-duplicate` would silently no-op the upload of a
+      # fresh binary when the version already exists — a subtle way to ship
+      # nothing while looking successful.
+      - name: Verify version not already published on nuget.org
+        if: github.event_name == 'push' || inputs.dry_run == false
+        run: |
+          version=$(grep -oE '<Version>[^<]+' Directory.Build.props | head -1 | sed 's/<Version>//')
+          for pkg in ShellIcons.Blazor; do
+            lower=$(echo "$pkg" | tr '[:upper:]' '[:lower:]')
+            existing=$(curl -sf "https://api.nuget.org/v3-flatcontainer/${lower}/index.json" 2>/dev/null | grep -oE '"[^"]*"' | tr -d '"' || echo "")
+            if echo "$existing" | grep -Fxq "$version"; then
+              echo "ERROR: $pkg $version is already published on nuget.org."
+              echo "NuGet does not allow overwriting a published version."
+              echo "Bump <Version> in Directory.Build.props and re-tag."
+              exit 1
+            fi
+          done
+          echo "OK — $version is not yet on nuget.org. Proceeding."
+
+      # Trusted Publishing: exchanges the workflow's OIDC token for a short-lived
+      # NuGet API key (valid ~1h). `user` is the nuget.org profile name (NOT
+      # email, NOT the GH org name), kept as a secret so it never lives in the
+      # workflow file. Runs immediately before push so the temp key stays fresh.
+      - name: Login to NuGet via Trusted Publishing
+        if: github.event_name == 'push' || inputs.dry_run == false
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Push to NuGet
+        if: github.event_name == 'push' || inputs.dry_run == false
+        env:
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+        run: |
+          for pkg in nupkgs/*.nupkg; do
+            echo "Publishing $pkg"
+            dotnet nuget push "$pkg" \
+              --api-key "$NUGET_API_KEY" \
+              --source https://api.nuget.org/v3/index.json \
+              --skip-duplicate
+          done
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref, '-alpha') || contains(github.ref, '-beta') || contains(github.ref, '-rc') }}
+          files: |
+            nupkgs/*.nupkg
+            nupkgs/*.snupkg

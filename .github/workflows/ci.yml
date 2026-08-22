@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      # ShellIcons.Blazor multi-targets net8.0 + net9.0, so both runtimes must
+      # be available on the CI runner even though the SDK is pinned to net10.
+      - name: Install net8 + net9 runtimes
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      - name: Restore
+        run: dotnet restore ShellIcons.slnx
+
+      - name: Build
+        run: dotnet build ShellIcons.slnx --configuration Release --no-restore
+        env:
+          ContinuousIntegrationBuild: true
+
+      - name: Test
+        run: dotnet test ShellIcons.slnx --configuration Release --no-build --verbosity normal
+
+      # Smoke pack — proves the packable project produces a valid .nupkg on
+      # every commit, so the release workflow can't be blindsided by a packaging
+      # bug. Packs the specific project (not the solution) to skip non-packable
+      # ones cleanly — packing the solution warns for every IsPackable=false project.
+      - name: Smoke pack
+        run: dotnet pack src/ShellIcons.Blazor/ShellIcons.Blazor.csproj --configuration Release --no-build --output nupkgs
+        env:
+          ContinuousIntegrationBuild: true
+
+      - name: List produced packages
+        run: ls -la nupkgs/
