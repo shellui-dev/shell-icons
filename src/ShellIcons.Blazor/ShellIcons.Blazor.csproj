@@ -2,18 +2,11 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>ShellIcons</RootNamespace>
 
     <IsPackable>true</IsPackable>
     <PackageId>ShellIcons.Blazor</PackageId>
-    <Description>Lucide-derived SVG icons for Blazor. Zero JS, zero CSS, tree-shakeable typed components.</Description>
-    <Authors>shellui-dev</Authors>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageTags>blazor;icons;svg;lucide;razor</PackageTags>
-    <RepositoryUrl>https://github.com/shellui-dev/shell-icons</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/shellui-dev/shell-icons</PackageProjectUrl>
+    <Description>Lucide-derived SVG icons for Blazor. Zero JS, zero CSS, tree-shakeable typed components auto-generated from the full 1,555-icon Lucide catalog.</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,11 +30,6 @@
   <ItemGroup>
     <AdditionalFiles Include="..\..\catalog\lucide\icons\*.svg" />
     <AdditionalFiles Include="..\..\catalog\custom\icons\*.svg" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\NOTICE.md" Pack="true" PackagePath="\" />
-    <None Include="..\..\README.md" Pack="true" PackagePath="\" Condition="Exists('..\..\README.md')" />
   </ItemGroup>
 
 </Project>
