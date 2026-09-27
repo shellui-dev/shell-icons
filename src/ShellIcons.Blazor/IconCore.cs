@@ -29,7 +29,10 @@ public abstract class IconCore : ComponentBase
     /// <summary>Accessible title. When set, the icon is announced by screen readers via &lt;title&gt; + <c>role="img"</c> + <c>aria-labelledby</c>. When null, the icon is decorative and gets <c>aria-hidden="true"</c>.</summary>
     [Parameter] public string? Title { get; set; }
 
-    /// <summary>Extra attributes forwarded to the root &lt;svg&gt; element (e.g. <c>style</c>, <c>@onclick</c>).</summary>
+    /// <summary>
+    /// Extra attributes forwarded to the root &lt;svg&gt; (e.g. <c>style</c>, <c>data-*</c>). Pass handlers
+    /// without the <c>@</c> — <c>onclick="@(() => Handler())"</c> — or put them on a wrapping <c>&lt;button&gt;</c>.
+    /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -70,7 +73,10 @@ public abstract class IconCore : ComponentBase
         }
 
         if (AdditionalAttributes is not null)
+        {
+            ThrowOnEventDirectiveMisuse(AdditionalAttributes);
             builder.AddMultipleAttributes(14, AdditionalAttributes);
+        }
 
         if (Title is not null)
         {
@@ -83,6 +89,22 @@ public abstract class IconCore : ComponentBase
         EmitChildren(builder, 18);
 
         builder.CloseElement();
+    }
+
+    /* On a component, Razor passes @onclick="Save" as a string attribute named "@onclick";
+       the browser's setAttribute rejects that name and the render batch fails. */
+    private void ThrowOnEventDirectiveMisuse(IReadOnlyDictionary<string, object> attributes)
+    {
+        foreach (var key in attributes.Keys)
+        {
+            if (key.StartsWith("@on", StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException(
+                    $"'{key}' on icon '{IconName}' has no effect: on a component Razor passes it as a plain string, " +
+                    $"not an event handler. Put the handler on a wrapping <button {key}=\"…\"> (recommended for accessibility), " +
+                    $"or pass it without the @: {key[1..]}=\"@(() => Handler())\".");
+            }
+        }
     }
 
     private string ComputeStrokeWidth()
