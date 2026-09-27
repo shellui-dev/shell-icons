@@ -29,23 +29,18 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            9.0.x
-            10.0.x
+          global-json-file: global.json
 
+      # Keep in step with the ShellDocs.* package versions in ShellIcons.Docs.csproj.
       - name: Install ShellDocs.CLI
-        run: dotnet tool install -g ShellDocs.CLI --prerelease
+        run: dotnet tool install -g ShellDocs.CLI --version 0.1.7-alpha
 
-      - name: Restore
-        run: dotnet restore ShellIcons.slnx
-
+      # Prerenders every content/ page to static HTML; CNAME ships from wwwroot/.
       - name: Build docs (static)
         working-directory: docs/ShellIcons.Docs
-        run: shelldocs build --output ../../publish --spa-fallback
+        run: shelldocs build --output ../../publish --spa-fallback --site-url https://shellicons.shellui.dev
 
-      - name: Set custom domain (CNAME)
-        run: echo "shellicons.shellui.dev" > publish/CNAME
-
+      # Jekyll would drop the _framework/ and _content/ folders.
       - name: Disable Jekyll
         run: touch publish/.nojekyll
 
