@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Covers the xmlns, string → IconName conversion, and icons:Image next to MAUI's Image. -->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="https://shellicons.dev/maui"
+             x:Class="ShellIcons.Maui.Tests.XamlFixture">
+    <VerticalStackLayout>
+        <icons:Icon x:Name="Dispatched" x:FieldModifier="internal" Name="Search" Size="16" Color="Crimson" />
+        <icons:ChevronRight x:Name="Typed" x:FieldModifier="internal" StrokeThickness="1.5" AbsoluteStroke="True" />
+        <icons:Image x:Name="TypedImageIcon" x:FieldModifier="internal" />
+        <Image x:Name="MauiImage" x:FieldModifier="internal" />
+    </VerticalStackLayout>
+</ContentView>
