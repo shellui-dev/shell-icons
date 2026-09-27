@@ -12,22 +12,19 @@ builder.Services.AddShellDocs(o =>
 {
     o.ContentRoot = Path.Combine(builder.Environment.ContentRootPath, "content");
     o.SiteName = "ShellIcons";
-    o.SiteTagline = "Lucide-derived SVG icons for Blazor.";
+    o.SiteTagline = "Lucide-derived icons for Blazor and .NET MAUI.";
     o.GitHubRepo = "shellui-dev/shell-icons";
-
-    // Sidebar-nav layout — top-nav links move into the sidebar's header.
     o.LayoutVariant = DocsLayoutVariant.Sidebar;
 
     o.AddNavLink("Docs", "/docs/introduction");
-    o.AddNavLink("Icons", "/icons");
+    o.AddNavLink("Icons", "/docs/icons");
     o.AddNavLink("GitHub", "https://github.com/shellui-dev/shell-icons");
 
-    // Every generated ShellIcons component is available inside razor:preview blocks.
+    // Every icon component, usable in razor:preview blocks.
     o.RegisterComponentsFromAssembly<global::ShellIcons.IconCore>();
 
-    // Preview wrappers — razor:preview fences require a registered component as
-    // the outer tag, and Markdig mangles inline HTML like <span> between component
-    // slots. PreviewRow / PreviewCell survive both because they're registered too.
+    /* This site's own components: PreviewRow/PreviewCell (razor:preview needs a registered outer tag,
+       and Markdig mangles plain <span> wrappers) and IconBrowser (used from content/docs/icons.md). */
     o.RegisterComponentsFromAssembly<ShellIcons.Docs.Preview.PreviewRow>();
 });
 

@@ -2,8 +2,10 @@
   "title": "Docs",
   "pages": [
     "introduction",
+    "icons",
     "getting-started",
     "guides",
+    "maui",
     "reference"
   ]
 }

@@ -34,11 +34,11 @@ Both feed the same generator. Both produce components in the same `ShellIcons.Ic
    - `Naming.KebabToPascal` turns `chevron-right` into `ChevronRight`.
    - `ResolvePack` tags the icon `"lucide"` or `"custom"` based on file path.
 4. Collision resolution — custom-pack icons win over same-name Lucide icons. A `SHELLICONS001` info diagnostic is logged.
-5. Emit — one `.g.cs` per icon plus a single `ShellIcon.g.cs` dispatcher:
+5. Emit, per icon: a component in `ShellIcons.Icons`, its `{Name}Icon` alias in `ShellIcons`, and an `Icon.{Name}()` factory method. Plus one `ShellIcon` dispatcher for the whole catalog:
 
 ```csharp
 // Icons/ChevronRight.g.cs (auto-generated)
-public sealed class ChevronRight : global::ShellIcons.IconCore
+public class ChevronRight : global::ShellIcons.IconCore
 {
     protected override string IconName => "chevron-right";
     protected override void EmitChildren(RenderTreeBuilder builder, int seq) =>
@@ -64,6 +64,10 @@ Rebuild after. The generator picks up the diff automatically — new icons emit,
 | ID | Severity | When |
 |---|---|---|
 | `SHELLICONS001` | Info | A `catalog/custom/` icon has the same name as a `catalog/lucide/` icon. Custom wins; the message logs the override. |
+| `SHELLICONS002` | Warning | MAUI only: an icon uses SVG the XAML targets can't draw (`<g>`, `transform`, …). That part is skipped. |
+| `SHELLICONS003` | Info | An icon has no `{Name}Icon` alias because the name is taken (Lucide's `shell` → `ShellIcon`, the dispatcher). Use `Icon.Shell()`. |
+| `SHELLICONS004` | Warning | MAUI only: an icon name can't become an enum member (e.g. `none`, or starts with a digit). It's skipped. |
+| `SHELLICONS005` | Info | MAUI only: a shape lies entirely outside the 24×24 viewBox and is dropped. |
 
 ## Debugging the generator
 
@@ -72,11 +76,13 @@ Set `<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>` in `ShellIco
 ## Naming edge cases
 
 - Lucide 0.475.0 ships **no numeric-prefix icons** (e.g. `1st-place-medal`), so we don't ship a NumberPrefix map yet. If a future Lucide bump introduces one, we'll port Lucide's own map — `"1st" → "firstPlace"`.
-- Aliases (e.g. `home` → `house`) are not currently emitted as separate components. The alias metadata in the JSON sidecar is parsed but not used yet. Planned.
+- Aliases (e.g. `home` → `house`) aren't emitted as separate components. On MAUI, `IconCatalog.TryParse("home", …)` resolves them; the Blazor package doesn't use them yet.
 
 ## Trimming
 
-Both forms behave well under the trimmer:
-
-- Typed icons — only referenced types survive
+- Typed icons, `{Name}Icon` aliases and `Icon.*` factory methods — only the icons you reference survive
 - `ShellIcon` dispatcher — referencing it (or `ShellIcon.Names`) roots the entire dictionary
+
+## MAUI
+
+`ShellIcons.Maui` has its own generator, `ShellIcons.Generator.Xaml`, which reads the same SVGs plus the JSON sidecars. It converts each icon to a single path (see [How rendering works](/docs/maui/rendering)) and emits the `IconName` enum, `IconCatalog` metadata and one typed control per icon.
