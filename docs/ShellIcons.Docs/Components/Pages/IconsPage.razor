@@ -175,7 +175,7 @@
             raf = requestAnimationFrame(filter);
         });
 
-        // Focus the search when user starts typing anywhere on the page
+        // "/" focuses the search.
         document.addEventListener('keydown', (e) => {
             if (e.key === '/' && document.activeElement !== input) {
                 e.preventDefault();
@@ -187,7 +187,8 @@
     function copyIconSnippet(cell) {
         const name = cell.dataset.name;
         const pascal = name.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join('');
-        const snippet = '<' + pascal + ' />';
+        // `shell` has no suffixed form (ShellIcon is the dispatcher).
+        const snippet = name === 'shell' ? '@Icon.Shell()' : '<' + pascal + 'Icon />';
         navigator.clipboard?.writeText(snippet).then(() => {
             const toast = document.getElementById('copy-toast');
             toast.textContent = 'Copied: ' + snippet;

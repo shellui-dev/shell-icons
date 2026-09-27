@@ -8,6 +8,8 @@ order: 5
 
 ShellIcons ships two ways to render an icon. Both produce identical HTML. The difference is at build time.
 
+> **Which typed form?** The examples below use the flat `<ChevronRight />` names from `ShellIcons.Icons`. In an app that also uses a UI kit, use the suffixed twins from `ShellIcons` instead — `<ChevronRightIcon />` — or the factory `@Icon.ChevronRight()`. They tree-shake the same way, and they can't collide with UI-kit components like `Badge` or `Table` (RZ9985).
+
 ## Typed form — the default
 
 ```razor

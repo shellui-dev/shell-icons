@@ -14,7 +14,8 @@ x86/
 .vs/
 .vscode/
 .idea/
-.claude/       # local Claude Code launch config, per-machine
+# local Claude Code launch config, per-machine
+.claude/
 *.user
 *.suo
 

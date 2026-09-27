@@ -20,36 +20,30 @@ That's the whole install. No CSS import, no JS reference, no config file.
 - **`net9.0`**
 - **`net10.0`** works via forward-compat
 
-## Namespace layout
+## Import
 
-ShellIcons splits into two namespaces so importing them globally doesn't collide with anything Blazor or the BCL ships:
-
-| Namespace | What lives there | When to import |
-|---|---|---|
-| `ShellIcons` | `IconCore`, `ShellIcon` dispatcher | Import globally in `_Imports.razor` |
-| `ShellIcons.Icons` | All 1,555 typed icon components | Import **per page** — protects Blazor's `Router`, `System.Diagnostics.Activity`, `List<T>`, etc. from being shadowed |
-
-**Global** — add to `Components/_Imports.razor`:
+Add one line to `Components/_Imports.razor`:
 
 ```razor
 @using ShellIcons
 ```
 
-**Per page** — at the top of any `.razor` file that uses typed icons:
+That brings in everything you normally need, none of which collides with UI-kit components:
 
-```razor
-@page "/dashboard"
-@using ShellIcons.Icons
+| Form | Example | Use for |
+|---|---|---|
+| Suffixed components | `<ChevronRightIcon />` | Markup — the default |
+| Factory | `@Icon.ChevronRight()` | Icons as values (`RenderFragment` parameters, lists) |
+| Dispatcher | `<ShellIcon Name="chevron-right" />` | Names only known at runtime |
 
-<ChevronRight />
-```
+The unsuffixed components (`<ChevronRight />`) live in `ShellIcons.Icons`. Don't import that namespace globally: its 1,555 short names collide with UI-kit components such as `Badge`, `Table` and `Router` (RZ9985). See [Typed vs dispatcher](/docs/guides/typed-vs-dispatcher).
 
 ## Verify
 
 Drop this anywhere and run:
 
 ```razor:preview
-<Zap Size="32" />
+<ZapIcon Size="32" />
 ```
 
 If you see a lightning bolt above, you're wired.

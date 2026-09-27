@@ -12,26 +12,31 @@ order: 2
 dotnet add package ShellIcons.Blazor
 ```
 
-## 2. Import the icons namespace
+## 2. Import the namespace
 
-At the top of any `.razor` page that will render icons:
+Once, in `Components/_Imports.razor`:
 
 ```razor
-@page "/"
-@using ShellIcons.Icons
+@using ShellIcons
 ```
 
 ## 3. Render icons
 
-Every icon is a typed component. IntelliSense the name you want — `<Ch` will suggest `ChevronDown`, `ChevronLeft`, `ChevronRight`, `ChevronUp`, and so on.
+Every icon is a component named `{Name}Icon`. IntelliSense the name you want — `<Chevron` will suggest `ChevronDownIcon`, `ChevronLeftIcon`, `ChevronRightIcon`, `ChevronUpIcon`, and so on.
 
 ```razor:preview
 <PreviewRow>
-  <ChevronLeft />
-  <ChevronRight />
-  <ChevronDown />
-  <ChevronUp />
+  <ChevronLeftIcon />
+  <ChevronRightIcon />
+  <ChevronDownIcon />
+  <ChevronUpIcon />
 </PreviewRow>
+```
+
+When the icon is a *value* — a `RenderFragment` parameter on another component, or an item in a list — use the factory instead:
+
+```razor
+<NavItem Href="/" Label="Home" Icon="@Icon.House()" />
 ```
 
 ## 4. Size and stroke

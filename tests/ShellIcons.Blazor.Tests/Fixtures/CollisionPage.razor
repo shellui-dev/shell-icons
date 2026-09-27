@@ -1,0 +1,16 @@
+@namespace CollisionFixture
+@using ShellIcons
+@using FakeUiKit
+@using Microsoft.AspNetCore.Components.Routing
+
+@* If a {Name}Icon alias ever collides with a UI-kit name, this page stops compiling (RZ9985). *@
+
+<Badge>New</Badge>
+<BadgeIcon Size="16" Class="markup-icon" onclick="@(() => Increment())" />
+<RouterIcon Class="router-icon" />
+@Icon.Table(cssClass: "factory-icon")
+
+@code {
+    public int Clicks { get; private set; }
+    private void Increment() => Clicks++;
+}
