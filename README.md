@@ -7,27 +7,24 @@ Lucide-derived SVG icons for **Blazor**, **Avalonia**, and **.NET MAUI**.
 - Native rendering per target: inline `<svg>` in Blazor, native `Path` shapes in Avalonia/MAUI
 - Tree-shakeable typed components per icon
 
-See [SHELLICONS.md](SHELLICONS.md) for the full design proposal.
+Docs: [shellicons.shellui.dev](https://shellicons.shellui.dev)
 
 ## Status
 
-**Docs live in dev, Phase 2 complete — full Lucide 0.475.0 catalog (1555 icons) auto-generated for Blazor.**
+| Package | Status |
+|---|---|
+| `ShellIcons.Blazor` | **0.1.0-alpha on [NuGet](https://www.nuget.org/packages/ShellIcons.Blazor)** — 1,555 Lucide 0.475.0 icons |
+| `ShellIcons.Maui` | **Preview, unpublished** — builds for Android, iOS, Mac Catalyst and Windows; see [src/ShellIcons.Maui](src/ShellIcons.Maui/README.md) |
+| `ShellIcons.Avalonia` | Planned — will reuse the MAUI path conversion |
 
-- [x] Design doc
-- [x] Solution scaffold
-- [x] Blazor `IconCore` with Size/StrokeWidth/Class/Title/AbsoluteStroke props
-- [x] Lucide catalog sync script (pinned via `LUCIDE_VERSION.txt`)
-- [x] `catalog/custom/` drop-in path for repo-owned icons
-- [x] Roslyn incremental source generator — reads both `catalog/lucide/` and `catalog/custom/`, emits 1555 typed components + `ShellIcon` dispatcher
-- [x] Test suite: 46 unit + integration tests (xUnit + bUnit)
-- [x] Docs site at [docs/ShellIcons.Docs](docs/ShellIcons.Docs) — ShellDocs-powered, runs at `dotnet run` on http://localhost:5145
-- [x] Live icon browser at `/icons` — searchable, 1555-cell grid with click-to-copy
-- [x] GH Pages workflow + `CNAME` for [shellicons.shellui.dev](https://shellicons.shellui.dev)
-- [x] CI + Release pipelines — see [RELEASING.md](RELEASING.md) for the runbook
-- [ ] Blocker: `shelldocs.cli` build doesn't emit `index.html` or the WASM runtime — GH Pages deploy waits on a CLI fix upstream
-- [ ] First publish `ShellIcons.Blazor 0.1.0-alpha` to NuGet — bump version, tag `v0.1.0-alpha`, approve in the Actions UI
-- [ ] Avalonia target (Phase 4)
-- [ ] MAUI target (Phase 5)
+- [x] Source generators emit every icon from the vendored catalog (`LUCIDE_VERSION.txt`) plus drop-in `catalog/custom/` icons
+- [x] Blazor: suffixed components (`<ChevronRightIcon />`), `Icon.*` factory, `<ShellIcon Name>` dispatcher — safe next to UI kits
+- [x] MAUI: typed controls, `IconName` dispatcher, `IconCatalog` metadata with alias lookup
+- [x] 135 tests (xUnit + bUnit + headless MAUI), CI for both solutions, tag-driven release — see [RELEASING.md](RELEASING.md)
+- [x] Docs site at [docs/ShellIcons.Docs](docs/ShellIcons.Docs) (ShellDocs 0.1.7-alpha), with a searchable icon browser
+- [x] Static build for GitHub Pages ([shellicons.shellui.dev](https://shellicons.shellui.dev)) — deploys on push to `main`
+- [ ] MAUI: check rendering on Android/iOS devices, then publish
+- [ ] Avalonia target
 
 ## Blazor quickstart
 
@@ -153,14 +150,27 @@ Without `Title` icons are decorative (`aria-hidden="true"`); with it they get `r
 <XIcon Title="Close dialog" />
 ```
 
+## MAUI quickstart (preview)
+
+```xml
+<ContentPage xmlns:icons="https://shellicons.dev/maui">
+    <icons:ChevronRight Size="16" />
+    <icons:Icon Name="{Binding StatusIcon}" Color="{DynamicResource Primary}" />
+</ContentPage>
+```
+
+Not on NuGet yet — reference `src/ShellIcons.Maui` from source. Docs: [MAUI getting started](docs/ShellIcons.Docs/content/docs/maui/getting-started.md).
+
 ## Repo layout
 
 ```
 shell-icons/
-├── SHELLICONS.md              design proposal
+├── CHANGELOG.md                release notes
+├── RELEASING.md                how to cut a release
 ├── LUCIDE_VERSION.txt         pinned upstream tag
 ├── NOTICE.md                  Lucide ISC attribution
-├── ShellIcons.slnx
+├── ShellIcons.slnx             Blazor, generators, tests, docs — no MAUI workload needed
+├── ShellIcons.Maui.slnx        MAUI projects — needs `dotnet workload install maui`
 ├── Directory.Build.props
 ├── catalog/
 │   ├── lucide/icons/          vendored Lucide SVGs (populated by sync-lucide.ps1)
@@ -170,15 +180,20 @@ shell-icons/
 ├── scripts/
 │   └── sync-lucide.ps1        refresh vendored Lucide catalog
 ├── src/
-│   ├── ShellIcons.Blazor/     Razor Class Library (net8.0;net9.0)
-│   └── ShellIcons.Generator/  Roslyn incremental source generator (netstandard2.0)
+│   ├── ShellIcons.Blazor/          Razor Class Library (net8.0;net9.0)
+│   ├── ShellIcons.Generator/       Blazor source generator (netstandard2.0)
+│   ├── ShellIcons.Maui/            MAUI library (preview)
+│   └── ShellIcons.Generator.Xaml/  MAUI source generator + SVG → path conversion
 ├── tests/
-│   ├── ShellIcons.Generator.Tests/   xUnit: SvgParser, Naming
-│   └── ShellIcons.Blazor.Tests/       xUnit + bUnit: IconCore, generated icons, dispatcher
+│   ├── ShellIcons.Generator.Tests/  xUnit: SvgParser, Naming, path conversion
+│   ├── ShellIcons.Blazor.Tests/     xUnit + bUnit: components, factory, dispatcher, collisions
+│   └── ShellIcons.Maui.Tests/       headless MAUI: controls, XAML, whole-catalog geometry
 ├── docs/
 │   └── ShellIcons.Docs/       ShellDocs site — dev at http://localhost:5145
 └── .github/workflows/
-    └── docs.yml               GH Pages deploy pipeline (waits on shelldocs.cli fix)
+    ├── ci.yml                 ubuntu: ShellIcons.slnx · windows: ShellIcons.Maui.slnx
+    ├── release.yml            tag → NuGet (Trusted Publishing) + GitHub Release
+    └── docs.yml               static build → GitHub Pages
 ```
 
 ## Docs
@@ -192,7 +207,16 @@ dotnet run
 
 Serves at http://localhost:5145. Pages live in `docs/ShellIcons.Docs/content/docs/*.md`. Live component previews via `razor:preview` code fences work out of the box.
 
-The `/icons` route is a searchable browser of the entire catalog with click-to-copy component names.
+`/docs/icons` is a searchable browser of the entire catalog with click-to-copy component names.
+
+Build the static site the way the deploy workflow does (needs `dotnet tool install -g ShellDocs.CLI --version 0.1.7-alpha`):
+
+```bash
+cd docs/ShellIcons.Docs
+shelldocs build --output ../../publish --spa-fallback --site-url https://shellicons.shellui.dev
+```
+
+Every page under `content/` is prerendered to plain HTML, so any static host can serve `publish/`. Pages added as Razor `@page` routes outside `content/` are not prerendered — put new pages in `content/` (a component can be used from markdown, as `content/docs/icons.md` does).
 
 ## Refreshing the Lucide catalog
 

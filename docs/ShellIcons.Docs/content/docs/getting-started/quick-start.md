@@ -111,4 +111,4 @@ For dynamic use cases — icon names from JSON, markdown-authored content, CMS-d
 - [Sizing & stroke](/docs/guides/sizing-and-stroke) — details on `AbsoluteStroke`, CSS units
 - [Color & theming](/docs/guides/color-and-theming) — dark mode, CSS variables
 - [Accessibility](/docs/guides/accessibility) — when `Title` is right, when it's wrong
-- [Browse the catalog](/icons) — search all 1,555 icons
+- [Browse the catalog](/docs/icons) — search all 1,555 icons

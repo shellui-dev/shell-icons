@@ -18,8 +18,7 @@ jobs:
         with:
           global-json-file: global.json
 
-      # ShellIcons.Blazor multi-targets net8.0 + net9.0, so both runtimes must
-      # be available on the CI runner even though the SDK is pinned to net10.
+      # ShellIcons.Blazor targets net8.0 + net9.0, so the tests need both runtimes.
       - name: Install net8 + net9 runtimes
         uses: actions/setup-dotnet@v4
         with:
@@ -38,10 +37,7 @@ jobs:
       - name: Test
         run: dotnet test ShellIcons.slnx --configuration Release --no-build --verbosity normal
 
-      # Smoke pack — proves the packable project produces a valid .nupkg on
-      # every commit, so the release workflow can't be blindsided by a packaging
-      # bug. Packs the specific project (not the solution) to skip non-packable
-      # ones cleanly — packing the solution warns for every IsPackable=false project.
+      # The project, not the solution: packing the solution warns for every non-packable project.
       - name: Smoke pack
         run: dotnet pack src/ShellIcons.Blazor/ShellIcons.Blazor.csproj --configuration Release --no-build --output nupkgs
         env:
@@ -49,3 +45,25 @@ jobs:
 
       - name: List produced packages
         run: ls -la nupkgs/
+
+  # Windows builds every MAUI target (Android, iOS, Mac Catalyst, Windows); ubuntu lacks the workloads.
+  maui:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Build (all platform targets)
+        run: dotnet build ShellIcons.Maui.slnx --configuration Release
+        env:
+          ContinuousIntegrationBuild: true
+
+      - name: Test
+        run: dotnet test tests/ShellIcons.Maui.Tests --configuration Release --no-build --verbosity normal

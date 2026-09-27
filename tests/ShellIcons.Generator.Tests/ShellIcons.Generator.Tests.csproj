@@ -20,14 +20,13 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
-  <!--
-    Compile the pure-function pieces of the generator directly into this test assembly.
-    We don't ProjectReference the netstandard2.0 generator project because it's an analyzer
-    and its Roslyn-facing types (IconGenerator) are irrelevant to unit tests.
-  -->
+  <!-- Links the generators' pure functions; the analyzer projects themselves aren't referenced. -->
   <ItemGroup>
     <Compile Include="..\..\src\ShellIcons.Generator\SvgParser.cs" LinkBase="Generator" />
     <Compile Include="..\..\src\ShellIcons.Generator\Naming.cs" LinkBase="Generator" />
+    <Compile Include="..\..\src\ShellIcons.Generator.Xaml\PathNormalizer.cs" LinkBase="Generator.Xaml" />
+    <Compile Include="..\..\src\ShellIcons.Generator.Xaml\SvgShapeReader.cs" LinkBase="Generator.Xaml" />
+    <Compile Include="..\..\src\ShellIcons.Generator.Xaml\IconMetadataReader.cs" LinkBase="Generator.Xaml" />
   </ItemGroup>
 
 </Project>

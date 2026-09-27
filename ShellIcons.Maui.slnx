@@ -1,0 +1,10 @@
+<Solution>
+  <!-- Separate so ShellIcons.slnx builds without the MAUI workloads (dotnet workload install maui). -->
+  <Folder Name="/src/">
+    <Project Path="src/ShellIcons.Generator.Xaml/ShellIcons.Generator.Xaml.csproj" />
+    <Project Path="src/ShellIcons.Maui/ShellIcons.Maui.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ShellIcons.Maui.Tests/ShellIcons.Maui.Tests.csproj" />
+  </Folder>
+</Solution>

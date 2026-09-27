@@ -1,0 +1,137 @@
+@namespace ShellIcons.Docs.Components
+@using ShellIcons
+
+@* Used from content/docs/icons.md so `shelldocs build` prerenders it; behavior lives in wwwroot/icon-browser.js. *@
+
+<div class="icons-search">
+    <input id="icon-search"
+           type="search"
+           placeholder="Search @_names.Count icons — try 'arrow', 'circle', 'file'… (press /)"
+           autocomplete="off"
+           spellcheck="false"
+           aria-label="Search icons" />
+    <span class="icons-count" id="icon-count">@_names.Count</span>
+</div>
+
+<p class="icons-hint">Click an icon to copy its component, e.g. <code>&lt;ChevronRightIcon /&gt;</code>.</p>
+
+<div id="icon-grid" class="icon-grid" role="list">
+    @foreach (var name in _names)
+    {
+        <button type="button" class="icon-cell" role="listitem" data-name="@name" title="@name">
+            <ShellIcon Name="@name" Size="24" />
+            <span class="icon-name">@name</span>
+        </button>
+    }
+</div>
+
+<div id="empty-state" class="icons-empty" hidden>
+    <p>No icons match <code id="empty-query"></code>.</p>
+    <p>Try a shorter search, or open an <a href="https://github.com/lucide-icons/lucide/issues/new">issue against Lucide</a> if the icon you want doesn't exist yet.</p>
+</div>
+
+<div id="copy-toast" class="copy-toast" hidden role="status" aria-live="polite"></div>
+
+<style>
+    .icons-search {
+        position: relative;
+        display: flex;
+        align-items: center;
+        max-width: 32rem;
+        margin-top: 1rem;
+    }
+    .icons-search input {
+        flex: 1;
+        padding: 0.6rem 3.5rem 0.6rem 0.9rem;
+        font: inherit;
+        color: var(--foreground);
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        outline: none;
+        transition: border-color 120ms, box-shadow 120ms;
+    }
+    .icons-search input:focus {
+        border-color: var(--ring, var(--foreground));
+        box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring, var(--foreground)) 20%, transparent);
+    }
+    .icons-count {
+        position: absolute;
+        right: 0.7rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+        background: var(--muted);
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+    }
+    .icons-hint { color: var(--muted-foreground); font-size: 0.875rem; }
+
+    .icon-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+        gap: 6px;
+        margin: 1rem 0 3rem;
+    }
+    .icon-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 6px;
+        min-height: 90px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--card);
+        color: var(--foreground);
+        font: inherit;
+        cursor: copy;
+        transition: background 120ms, border-color 120ms, transform 120ms;
+    }
+    .icon-cell:hover {
+        background: var(--accent, var(--muted));
+        border-color: color-mix(in oklch, var(--foreground) 20%, var(--border));
+        transform: translateY(-1px);
+    }
+    .icon-cell[hidden] { display: none; }
+    .icon-name {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--muted-foreground);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        white-space: nowrap;
+    }
+
+    .icons-empty {
+        padding: 2rem 1rem;
+        text-align: center;
+        color: var(--muted-foreground);
+        border: 1px dashed var(--border);
+        border-radius: 8px;
+        margin: 1rem 0 3rem;
+    }
+
+    .copy-toast {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0.5rem 1rem;
+        background: var(--foreground);
+        color: var(--background);
+        border-radius: 999px;
+        font-size: 0.85rem;
+        z-index: 100;
+        opacity: 0;
+        transition: opacity 150ms;
+    }
+    .copy-toast.show { opacity: 1; }
+</style>
+
+@code {
+    private readonly IReadOnlyList<string> _names =
+        ShellIcon.Names.OrderBy(n => n, StringComparer.Ordinal).ToArray();
+}

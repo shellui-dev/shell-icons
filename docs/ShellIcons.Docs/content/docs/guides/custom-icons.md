@@ -14,7 +14,7 @@ The Roslyn source generator scans both `catalog/lucide/icons/` (vendored) and `c
 
 Match Lucide's format so custom icons feel visually cohesive:
 
-```svg
+```xml
 <svg xmlns="http://www.w3.org/2000/svg"
      width="24" height="24" viewBox="0 0 24 24"
      fill="none"
@@ -81,6 +81,10 @@ catalog/custom/icons/zap.svg   <!-- your preferred lightning bolt -->
 ```
 
 `<Zap />` now renders your version everywhere.
+
+## On MAUI
+
+Custom icons are converted for [MAUI](/docs/maui/rendering) too. Keep them flat — no `<g>`, no `transform`, every shape inside the 24×24 grid — and they render the same on every target. The build warns (`SHELLICONS002`) when something won't convert.
 
 ## Licensing
 

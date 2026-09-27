@@ -29,13 +29,15 @@
             <span>Get started</span>
             <ChevronRight Size="16" />
         </a>
-        <a href="/icons" class="btn ghost">
+        <a href="/docs/icons" class="btn ghost">
             <Search Size="16" />
             <span>Browse @ShellIcon.Names.Count icons</span>
         </a>
     </div>
 
     <pre class="install"><code>dotnet add package ShellIcons.Blazor</code></pre>
+
+    <p class="hero-also">Building with .NET MAUI? <a href="/docs/maui/getting-started">ShellIcons.Maui is in preview →</a></p>
 </div>
 
 <div class="showcase">
@@ -175,6 +177,13 @@
         font-size: 0.875rem;
         color: var(--foreground);
     }
+
+    .hero-also {
+        margin: 1rem 0 0;
+        font-size: 0.875rem;
+        color: var(--muted-foreground);
+    }
+    .hero-also a { color: var(--foreground); }
 
     .showcase {
         max-width: 60rem;
