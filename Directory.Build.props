@@ -1,6 +1,5 @@
 <Project>
 
-  <!-- Language + compilation defaults -->
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
@@ -15,7 +14,6 @@
     <Version>0.1.0-alpha</Version>
   </PropertyGroup>
 
-  <!-- Package metadata (applies to any project with IsPackable=true) -->
   <PropertyGroup>
     <Authors>shellui-dev</Authors>
     <Company>ShellUI</Company>
@@ -28,7 +26,6 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
-  <!-- Symbols + Source Link — enables source-stepping in consumers' debuggers -->
   <PropertyGroup>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -42,15 +39,11 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <!-- Auto-include the repo README + NOTICE in every packable project -->
   <ItemGroup Condition="'$(IsPackable)' == 'true'">
     <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
     <None Include="$(MSBuildThisFileDirectory)NOTICE.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <!-- Source Link package (GitHub) — added to every packable project -->
-  <ItemGroup Condition="'$(IsPackable)' == 'true'">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-  </ItemGroup>
+  <!-- Source Link is built into the .NET 8+ SDK; the SourceLink package pulled in a vulnerable dependency (NU1902). -->
 
 </Project>
