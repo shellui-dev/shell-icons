@@ -1,11 +1,9 @@
 using Bunit;
+using Microsoft.AspNetCore.Components;
 using AngleSharp.Dom;
 
 namespace ShellIcons.Blazor.Tests;
 
-// Tests for the static `Icon` factory dispatcher (Icon.Plus(), Icon.Bell(), etc.)
-// added for consumers who can't import the flat `ShellIcons.Icons` namespace
-// without colliding with UI-library types (Badge, Table, Router, …).
 public class IconFactoryTests : IDisposable
 {
     private readonly TestContext _ctx = new();
@@ -15,7 +13,6 @@ public class IconFactoryTests : IDisposable
     [Fact]
     public void Factory_RendersMatchingShape()
     {
-        // chevron-right's Lucide path data
         var cut = _ctx.Render(Icon.ChevronRight());
         var path = cut.Find("svg > path");
 
@@ -47,7 +44,6 @@ public class IconFactoryTests : IDisposable
 
         Assert.Equal("img", svg.GetAttribute("role"));
         Assert.NotNull(svg.GetAttribute("aria-labelledby"));
-        // aria-hidden should NOT be set when a title is provided
         Assert.Null(svg.GetAttribute("aria-hidden"));
     }
 
@@ -56,7 +52,6 @@ public class IconFactoryTests : IDisposable
     {
         var svg = _ctx.Render(Icon.House()).Find("svg");
 
-        // Decorative: hidden from AT, no role/title id
         Assert.Equal("true", svg.GetAttribute("aria-hidden"));
         Assert.Null(svg.GetAttribute("role"));
     }
@@ -74,5 +69,45 @@ public class IconFactoryTests : IDisposable
 
         Assert.Equal("my-icon", svg.GetAttribute("data-testid"));
         Assert.Equal("color: crimson", svg.GetAttribute("style"));
+    }
+
+    [Fact]
+    public void Factory_AllDefaults_ReturnsCachedFragment()
+    {
+        // No-arg calls must not allocate a new delegate per render.
+        Assert.Same(Icon.Plus(), Icon.Plus());
+        Assert.NotSame(Icon.Plus(), Icon.Minus());
+    }
+
+    [Fact]
+    public void Factory_NonDefaultArgs_ReturnsFreshFragment()
+    {
+        Assert.NotSame(Icon.Plus(size: "16"), Icon.Plus(size: "16"));
+    }
+
+    [Fact]
+    public void Factory_DefaultArgs_RenderLucideDefaults()
+    {
+        var svg = _ctx.Render(Icon.Plus()).Find("svg");
+
+        Assert.Equal("24", svg.GetAttribute("width"));
+        Assert.Equal("2", svg.GetAttribute("stroke-width"));
+        Assert.Null(svg.GetAttribute("class"));
+    }
+
+    [Fact]
+    public void Factory_OnClickViaAdditionalAttributes_UsesPlainEventName()
+    {
+        // "onclick", not "@onclick": the @ form is Razor markup syntax only.
+        var clicks = 0;
+        var extras = new Dictionary<string, object>
+        {
+            ["onclick"] = EventCallback.Factory.Create(this, () => clicks++)
+        };
+
+        var cut = _ctx.Render(Icon.Bell(additionalAttributes: extras));
+        cut.Find("svg").Click();
+
+        Assert.Equal(1, clicks);
     }
 }
