@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!-- net10.0 lets tests run the controls without a device. -->
+		<TargetFrameworks>net10.0;net10.0-android</TargetFrameworks>
+		<TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<RootNamespace>ShellIcons.Maui</RootNamespace>
+
+		<IsPackable>true</IsPackable>
+		<PackageId>ShellIcons.Maui</PackageId>
+		<Description>Lucide-derived icons for .NET MAUI as native Path shapes. Typed controls, an IconName enum dispatcher and tag/alias metadata — generated from the same 1,555-icon catalog as ShellIcons.Blazor, with no runtime SVG parsing.</Description>
+		<PackageTags>maui;icons;svg;lucide;xaml;shellui</PackageTags>
+
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ShellIcons.Generator.Xaml\ShellIcons.Generator.Xaml.csproj"
+		                  OutputItemType="Analyzer"
+		                  ReferenceOutputAssembly="false" />
+	</ItemGroup>
+
+	<!-- The .json sidecars feed IconCatalog. -->
+	<ItemGroup>
+		<AdditionalFiles Include="..\..\catalog\lucide\icons\*.svg;..\..\catalog\lucide\icons\*.json" />
+		<AdditionalFiles Include="..\..\catalog\custom\icons\*.svg;..\..\catalog\custom\icons\*.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="ShellIcons.Maui.Tests" />
+	</ItemGroup>
+
+</Project>
