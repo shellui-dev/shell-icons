@@ -9,6 +9,10 @@ x86/
 ## NuGet packages
 *.nupkg
 *.snupkg
+nupkgs/
+
+## Static docs build (shelldocs build --output publish)
+publish/
 
 ## IDE
 .vs/
