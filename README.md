@@ -1,3 +1,5 @@
+![ShellIcons](https://raw.githubusercontent.com/shellui-dev/shell-icons/main/assets/readme-logo.svg)
+
 # ShellIcons
 
 Lucide-derived SVG icons for **Blazor**, **Avalonia**, and **.NET MAUI**.
