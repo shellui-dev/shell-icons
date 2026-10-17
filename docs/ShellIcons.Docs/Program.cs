@@ -23,8 +23,7 @@ builder.Services.AddShellDocs(o =>
     // Every icon component, usable in razor:preview blocks.
     o.RegisterComponentsFromAssembly<global::ShellIcons.IconCore>();
 
-    /* This site's own components: PreviewRow/PreviewCell (razor:preview needs a registered outer tag,
-       and Markdig mangles plain <span> wrappers) and IconBrowser (used from content/docs/icons.md). */
+    // This site's own components: PreviewRow/PreviewCell layout helpers and IconBrowser (content/docs/icons.md).
     o.RegisterComponentsFromAssembly<ShellIcons.Docs.Preview.PreviewRow>();
 });
 
