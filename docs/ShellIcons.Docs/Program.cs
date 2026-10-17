@@ -12,7 +12,7 @@ builder.Services.AddShellDocs(o =>
 {
     o.ContentRoot = Path.Combine(builder.Environment.ContentRootPath, "content");
     o.SiteName = "ShellIcons";
-    o.SiteTagline = "Lucide-derived icons for Blazor and .NET MAUI.";
+    o.SiteTagline = "Lucide-derived icons for Blazor, .NET MAUI and Avalonia.";
     o.GitHubRepo = "shellui-dev/shell-icons";
     o.LayoutVariant = DocsLayoutVariant.Sidebar;
 

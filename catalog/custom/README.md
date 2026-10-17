@@ -25,11 +25,11 @@ Match Lucide's shape contract so custom icons are visually cohesive with the res
 - **fill:** `none` on the root, unless a specific shape needs a fill (fill variants use `fill="currentColor"` on the elements that should be filled)
 - **Inner children:** any of `<path>`, `<circle>`, `<ellipse>`, `<rect>`, `<line>`, `<polyline>`, `<polygon>`. The generator strips the outer `<svg>` and preserves the shapes.
 
-## Staying portable to MAUI (and Avalonia)
+## Staying portable to MAUI and Avalonia
 
-Blazor renders your SVG as-is, so almost anything works there. The XAML targets convert every shape to native path geometry at build time, and they only understand the flat contract above. Break it and the icon still works in Blazor, but the build reports a problem for MAUI:
+Blazor renders your SVG as-is, so almost anything works there. The XAML targets convert every shape to native path geometry at build time, and they only understand the flat contract above. Break it and the icon still works in Blazor, but the build reports a problem for MAUI and Avalonia:
 
-| You use | What happens for MAUI | Diagnostic |
+| You use | What happens on MAUI and Avalonia | Diagnostic |
 |---|---|---|
 | `<g>`, `<use>`, `<defs>`, gradients, masks, text | That element is skipped | `SHELLICONS002` (warning) |
 | `transform="…"` on any shape | Reported; bake the transform into the coordinates instead | `SHELLICONS002` (warning) |

@@ -6,7 +6,7 @@ Lucide-derived SVG icons for **Blazor**, **Avalonia**, and **.NET MAUI**.
 
 - Zero JS, zero required CSS
 - Same visual system across all three .NET UI frameworks
-- Native rendering per target: inline `<svg>` in Blazor, native `Path` shapes in Avalonia/MAUI
+- Native rendering per target: inline `<svg>` in Blazor, native `Path` shapes in MAUI, direct drawing in Avalonia
 - Tree-shakeable typed components per icon
 
 Docs: [shellicons.shellui.dev](https://shellicons.shellui.dev)
@@ -17,16 +17,17 @@ Docs: [shellicons.shellui.dev](https://shellicons.shellui.dev)
 |---|---|
 | `ShellIcons.Blazor` | **0.1.0-alpha on [NuGet](https://www.nuget.org/packages/ShellIcons.Blazor)** — 1,555 Lucide 0.475.0 icons |
 | `ShellIcons.Maui` | **Preview, unpublished** — builds for Android, iOS, Mac Catalyst and Windows; see [src/ShellIcons.Maui](src/ShellIcons.Maui/README.md) |
-| `ShellIcons.Avalonia` | Planned — will reuse the MAUI path conversion |
+| `ShellIcons.Avalonia` | **Preview, unpublished** — Avalonia 12, `net8.0`; see [src/ShellIcons.Avalonia](src/ShellIcons.Avalonia/README.md) |
 
 - [x] Source generators emit every icon from the vendored catalog (`LUCIDE_VERSION.txt`) plus drop-in `catalog/custom/` icons
 - [x] Blazor: suffixed components (`<ChevronRightIcon />`), `Icon.*` factory, `<ShellIcon Name>` dispatcher — safe next to UI kits
 - [x] MAUI: typed controls, `IconName` dispatcher, `IconCatalog` metadata with alias lookup
-- [x] 135 tests (xUnit + bUnit + headless MAUI), CI for both solutions, tag-driven release — see [RELEASING.md](RELEASING.md)
+- [x] Avalonia: typed controls, `Kind` dispatcher, inherited `Foreground`, the same `IconCatalog`
+- [x] 168 tests (xUnit + bUnit + headless MAUI + headless Avalonia with Skia rendering), CI for both solutions, tag-driven release — see [RELEASING.md](RELEASING.md)
 - [x] Docs site at [docs/ShellIcons.Docs](docs/ShellIcons.Docs) (ShellDocs 0.1.7-alpha), with a searchable icon browser
 - [x] Static build for GitHub Pages ([shellicons.shellui.dev](https://shellicons.shellui.dev)) — deploys on push to `main`
 - [ ] MAUI: check rendering on Android/iOS devices, then publish
-- [ ] Avalonia target
+- [ ] Avalonia: run in a real desktop app, then publish
 
 ## Blazor quickstart
 
@@ -163,6 +164,17 @@ Without `Title` icons are decorative (`aria-hidden="true"`); with it they get `r
 
 Not on NuGet yet — reference `src/ShellIcons.Maui` from source. Docs: [MAUI getting started](docs/ShellIcons.Docs/content/docs/maui/getting-started.md).
 
+## Avalonia quickstart (preview)
+
+```xml
+<Window xmlns:icons="https://shellicons.dev/avalonia">
+    <icons:ChevronRight Size="16" />
+    <icons:Icon Kind="{Binding StatusIcon}" Foreground="Crimson" />
+</Window>
+```
+
+Icons inherit `Foreground`, so they match the surrounding text by default. Not on NuGet yet — reference `src/ShellIcons.Avalonia` from source. Docs: [Avalonia getting started](docs/ShellIcons.Docs/content/docs/avalonia/getting-started.md).
+
 ## Repo layout
 
 ```
@@ -171,7 +183,7 @@ shell-icons/
 ├── RELEASING.md                how to cut a release
 ├── LUCIDE_VERSION.txt         pinned upstream tag
 ├── NOTICE.md                  Lucide ISC attribution
-├── ShellIcons.slnx             Blazor, generators, tests, docs — no MAUI workload needed
+├── ShellIcons.slnx             Blazor, Avalonia, generators, tests, docs — no MAUI workload needed
 ├── ShellIcons.Maui.slnx        MAUI projects — needs `dotnet workload install maui`
 ├── Directory.Build.props
 ├── catalog/
@@ -185,11 +197,13 @@ shell-icons/
 │   ├── ShellIcons.Blazor/          Razor Class Library (net8.0;net9.0)
 │   ├── ShellIcons.Generator/       Blazor source generator (netstandard2.0)
 │   ├── ShellIcons.Maui/            MAUI library (preview)
-│   └── ShellIcons.Generator.Xaml/  MAUI source generator + SVG → path conversion
+│   ├── ShellIcons.Avalonia/        Avalonia library (preview, net8.0)
+│   └── ShellIcons.Generator.Xaml/  MAUI + Avalonia source generator, SVG → path conversion
 ├── tests/
 │   ├── ShellIcons.Generator.Tests/  xUnit: SvgParser, Naming, path conversion
 │   ├── ShellIcons.Blazor.Tests/     xUnit + bUnit: components, factory, dispatcher, collisions
-│   └── ShellIcons.Maui.Tests/       headless MAUI: controls, XAML, whole-catalog geometry
+│   ├── ShellIcons.Maui.Tests/       headless MAUI: controls, XAML, whole-catalog geometry
+│   └── ShellIcons.Avalonia.Tests/   headless Avalonia + Skia: controls, XAML, whole-catalog rendering
 ├── docs/
 │   └── ShellIcons.Docs/       ShellDocs site — dev at http://localhost:5145
 └── .github/workflows/
