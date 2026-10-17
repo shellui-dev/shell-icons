@@ -39,7 +39,9 @@ jobs:
 
       # The project, not the solution: packing the solution warns for every non-packable project.
       - name: Smoke pack
-        run: dotnet pack src/ShellIcons.Blazor/ShellIcons.Blazor.csproj --configuration Release --no-build --output nupkgs
+        run: |
+          dotnet pack src/ShellIcons.Blazor/ShellIcons.Blazor.csproj --configuration Release --no-build --output nupkgs
+          dotnet pack src/ShellIcons.Avalonia/ShellIcons.Avalonia.csproj --configuration Release --no-build --output nupkgs
         env:
           ContinuousIntegrationBuild: true
 

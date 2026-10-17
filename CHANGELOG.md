@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the ShellIcons packages. `ShellIcons.Blazor` is published on NuGet; `ShellIcons.Maui` is in preview and not published yet.
+All notable changes to the ShellIcons packages. `ShellIcons.Blazor` is published on NuGet; `ShellIcons.Maui` and `ShellIcons.Avalonia` are in preview and not published yet.
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows [SemVer](https://semver.org/spec/v2.0.0.html).
 
@@ -12,7 +12,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versio
 - **Blazor: `Icon.*` factory** — `Icon.ChevronRight()` returns a `RenderFragment`, for icons as values: component parameters and lists built in C#. Unused icons are still trimmed.
 - **Blazor: clear error for `@onclick` on an icon.** On a component, Razor passes `@onclick="…"` as a plain string, which broke rendering in the browser with a cryptic error. It now throws an `InvalidOperationException` that explains the forms that work.
 - **`ShellIcons.Maui` (preview, not yet on NuGet)** — the same catalog as native MAUI `Path` shapes: typed controls (`<icons:ChevronRight />`), an `IconName` dispatcher (`<icons:Icon Name="Search" />`), and `IconCatalog` with tags, categories, alias-aware `TryParse` and `Search`. Builds for Android, iOS, Mac Catalyst and Windows.
-- Build diagnostics for custom icons that can't be converted for MAUI: `SHELLICONS002` (unsupported SVG such as `<g>` or `transform`), `SHELLICONS004` (name not usable as an enum member), `SHELLICONS005` (shape outside the viewBox, dropped).
+- **`ShellIcons.Avalonia` (preview, not yet on NuGet)** — the same catalog for Avalonia 12 (`net8.0`): typed controls (`<icons:ChevronRight />`), a dispatcher (`<icons:Icon Kind="Search" />`) and the same `IconName` / `IconCatalog` API as the MAUI package. Icons inherit `Foreground`, so they take the color of the surrounding text.
+- Build diagnostics for custom icons that can't be converted for MAUI or Avalonia: `SHELLICONS002` (unsupported SVG such as `<g>` or `transform`), `SHELLICONS004` (name not usable as an enum member), `SHELLICONS005` (shape outside the viewBox, dropped).
 - Docs site at [shellicons.shellui.dev](https://shellicons.shellui.dev) (deployed from `main`), with a searchable icon browser and a MAUI section.
 
 ### Changed

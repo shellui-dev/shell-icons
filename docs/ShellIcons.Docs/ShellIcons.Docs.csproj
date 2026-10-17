@@ -10,10 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ShellDocs.Tokens" Version="0.1.7-alpha" />
-    <PackageReference Include="ShellDocs.Components" Version="0.1.7-alpha" />
-    <PackageReference Include="ShellDocs.Core" Version="0.1.7-alpha" />
-    <PackageReference Include="ShellDocs.Markdown" Version="0.1.7-alpha" />
+    <PackageReference Include="ShellDocs.Tokens" Version="0.1.11-alpha" />
+    <PackageReference Include="ShellDocs.Components" Version="0.1.11-alpha" />
+    <PackageReference Include="ShellDocs.Core" Version="0.1.11-alpha" />
+    <PackageReference Include="ShellDocs.Markdown" Version="0.1.11-alpha" />
   </ItemGroup>
 
   <ItemGroup>

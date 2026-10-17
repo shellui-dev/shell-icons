@@ -1,8 +1,6 @@
 @namespace ShellIcons.Docs.Preview
 
-@* Colored cell for icon showcases — sets `color` so nested icons pick it up
-   via currentColor. Alternative to <span style="color:…"> which can't be used
-   directly as a razor:preview root either. *@
+@* Colored cell for icon showcases: sets `color` so nested icons pick it up via currentColor. *@
 <span class="preview-cell" style="display:inline-flex;align-items:center;gap:@Gap;@(Color is null ? "" : $"color:{Color}")">
     @ChildContent
 </span>

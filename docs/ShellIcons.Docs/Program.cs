@@ -12,7 +12,7 @@ builder.Services.AddShellDocs(o =>
 {
     o.ContentRoot = Path.Combine(builder.Environment.ContentRootPath, "content");
     o.SiteName = "ShellIcons";
-    o.SiteTagline = "Lucide-derived icons for Blazor and .NET MAUI.";
+    o.SiteTagline = "Lucide-derived icons for Blazor, .NET MAUI and Avalonia.";
     o.GitHubRepo = "shellui-dev/shell-icons";
     o.LayoutVariant = DocsLayoutVariant.Sidebar;
 
@@ -23,8 +23,7 @@ builder.Services.AddShellDocs(o =>
     // Every icon component, usable in razor:preview blocks.
     o.RegisterComponentsFromAssembly<global::ShellIcons.IconCore>();
 
-    /* This site's own components: PreviewRow/PreviewCell (razor:preview needs a registered outer tag,
-       and Markdig mangles plain <span> wrappers) and IconBrowser (used from content/docs/icons.md). */
+    // This site's own components: PreviewRow/PreviewCell layout helpers and IconBrowser (content/docs/icons.md).
     o.RegisterComponentsFromAssembly<ShellIcons.Docs.Preview.PreviewRow>();
 });
 

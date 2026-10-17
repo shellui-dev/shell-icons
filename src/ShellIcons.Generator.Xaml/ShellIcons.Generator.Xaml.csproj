@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- Separate from ShellIcons.Generator: its Blazor components wouldn't compile in a MAUI project. -->
+  <!-- Serves MAUI and Avalonia. Separate from ShellIcons.Generator: its Blazor components wouldn't compile in a XAML project. -->
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Nullable>enable</Nullable>

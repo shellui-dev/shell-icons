@@ -4,7 +4,7 @@ How to ship a new version of `ShellIcons.Blazor` to NuGet.org and create the mat
 
 **Who can release:** anyone who can approve the `release` environment on GitHub. Contributors without that access open a PR; a maintainer does the release.
 
-**What's released:** only `ShellIcons.Blazor`. `ShellIcons.Maui` is in preview — `release.yml` doesn't pack it yet, and publishing it will need a Windows or macOS job with the MAUI workload. The docs site isn't part of a release either: it deploys to [shellicons.shellui.dev](https://shellicons.shellui.dev) on every push to `main` (`docs.yml`).
+**What's released:** only `ShellIcons.Blazor`. `ShellIcons.Maui` and `ShellIcons.Avalonia` are in preview — `release.yml` doesn't pack them yet. Publishing MAUI will need a Windows or macOS job with the MAUI workload; Avalonia packs on ubuntu, so it only needs adding to the existing pack step and the "already published" check. The docs site isn't part of a release either: it deploys to [shellicons.shellui.dev](https://shellicons.shellui.dev) on every push to `main` (`docs.yml`).
 
 Publishing uses **NuGet Trusted Publishing** — GitHub Actions authenticates via OIDC and gets a short-lived (~1 hour) API key per run. No long-lived key lives in the repo.
 

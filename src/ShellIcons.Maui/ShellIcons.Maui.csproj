@@ -9,6 +9,7 @@
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>
 		<RootNamespace>ShellIcons.Maui</RootNamespace>
+		<ShellIconsTarget>Maui</ShellIconsTarget>
 
 		<IsPackable>true</IsPackable>
 		<PackageId>ShellIcons.Maui</PackageId>
@@ -32,8 +33,9 @@
 		                  ReferenceOutputAssembly="false" />
 	</ItemGroup>
 
-	<!-- The .json sidecars feed IconCatalog. -->
+	<!-- The .json sidecars feed IconCatalog; ShellIconsTarget tells the generator which namespace to emit. -->
 	<ItemGroup>
+		<CompilerVisibleProperty Include="ShellIconsTarget" />
 		<AdditionalFiles Include="..\..\catalog\lucide\icons\*.svg;..\..\catalog\lucide\icons\*.json" />
 		<AdditionalFiles Include="..\..\catalog\custom\icons\*.svg;..\..\catalog\custom\icons\*.json" />
 	</ItemGroup>
