@@ -25,6 +25,7 @@ Docs: [shellicons.shellui.dev](https://shellicons.shellui.dev)
 - [x] Avalonia: typed controls, `Kind` dispatcher, inherited `Foreground`, the same `IconCatalog`
 - [x] 168 tests (xUnit + bUnit + headless MAUI + headless Avalonia with Skia rendering), CI for both solutions, tag-driven release — see [RELEASING.md](RELEASING.md)
 - [x] Docs site at [docs/ShellIcons.Docs](docs/ShellIcons.Docs) (ShellDocs 0.1.17-alpha), with a searchable icon browser
+- [x] Docs for AI agents: [`/llms.txt`](https://shellicons.shellui.dev/llms.txt), every page as Markdown, and `AGENTS.md` / `CLAUDE.md` / Copilot / Cursor rule files — see [AI Agents](https://shellicons.shellui.dev/docs/ai-agents)
 - [x] Static build for GitHub Pages ([shellicons.shellui.dev](https://shellicons.shellui.dev)) — deploys on push to `main`
 - [ ] MAUI: check rendering on Android/iOS devices, then publish
 - [ ] Avalonia: run in a real desktop app, then publish

@@ -6,6 +6,6 @@ order: 2
 
 # Browse icons
 
-Every icon in ShellIcons, from Lucide 0.475.0. The same names work in Blazor (`<ChevronRightIcon />`) and MAUI (`<icons:ChevronRight />`).
+Every icon in ShellIcons, from Lucide 0.475.0. The same names work in Blazor (`<ChevronRightIcon />`) and in MAUI and Avalonia XAML (`<icons:ChevronRight />`).
 
 <IconBrowser />
