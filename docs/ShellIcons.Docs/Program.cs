@@ -15,6 +15,7 @@ builder.Services.AddShellDocs(o =>
     o.SiteTagline = "Lucide-derived icons for Blazor, .NET MAUI and Avalonia.";
     o.GitHubRepo = "shellui-dev/shell-icons";
     o.LayoutVariant = DocsLayoutVariant.Sidebar;
+    o.SetLogo("/images/logo-light.svg", "/images/logo-dark.svg", "ShellIcons");
 
     o.AddNavLink("Docs", "/docs/introduction");
     o.AddNavLink("Icons", "/docs/icons");
