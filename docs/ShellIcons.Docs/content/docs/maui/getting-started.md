@@ -8,16 +8,14 @@ order: 1
 
 The same Lucide catalog as the Blazor package, drawn as native MAUI `Path` shapes. The SVG is converted at build time, so nothing parses SVG on the device.
 
-<Callout Variant="warning" Title="Preview — not on NuGet yet">
-ShellIcons.Maui builds for Android, iOS, Mac Catalyst and Windows and is covered by tests, but it hasn't been checked visually on Android or iOS devices yet. Reference the project from source until it's published.
+<Callout Variant="warning" Title="Preview">
+ShellIcons.Maui builds for Android, iOS, Mac Catalyst and Windows, is covered by tests and has been checked in a Windows app. It hasn't been checked on Android or iOS devices yet, and the API may still change before 1.0.
 </Callout>
 
 ## Install
 
-Until the package is published, reference the project. You need the MAUI workloads installed (`dotnet workload install maui`).
-
-```xml
-<ProjectReference Include="path/to/shell-icons/src/ShellIcons.Maui/ShellIcons.Maui.csproj" />
+```bash
+dotnet add package ShellIcons.Maui --prerelease
 ```
 
 Supported targets: `net10.0-android`, `net10.0-ios`, `net10.0-maccatalyst`, `net10.0-windows10.0.19041.0`.
