@@ -33,7 +33,7 @@ jobs:
 
       # Keep in step with the ShellDocs.* package versions in ShellIcons.Docs.csproj.
       - name: Install ShellDocs.CLI
-        run: dotnet tool install -g ShellDocs.CLI --version 0.1.7-alpha
+        run: dotnet tool install -g ShellDocs.CLI --version 0.1.19-alpha
 
       # Prerenders every content/ page to static HTML; CNAME ships from wwwroot/.
       - name: Build docs (static)

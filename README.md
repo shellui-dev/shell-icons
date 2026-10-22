@@ -24,7 +24,7 @@ Docs: [shellicons.shellui.dev](https://shellicons.shellui.dev)
 - [x] MAUI: typed controls, `IconName` dispatcher, `IconCatalog` metadata with alias lookup
 - [x] Avalonia: typed controls, `Kind` dispatcher, inherited `Foreground`, the same `IconCatalog`
 - [x] 168 tests (xUnit + bUnit + headless MAUI + headless Avalonia with Skia rendering), CI for both solutions, tag-driven release — see [RELEASING.md](RELEASING.md)
-- [x] Docs site at [docs/ShellIcons.Docs](docs/ShellIcons.Docs) (ShellDocs 0.1.17-alpha), with a searchable icon browser
+- [x] Docs site at [docs/ShellIcons.Docs](docs/ShellIcons.Docs) (ShellDocs 0.1.19-alpha), with a searchable icon browser
 - [x] Docs for AI agents: [`/llms.txt`](https://shellicons.shellui.dev/llms.txt), every page as Markdown, and `AGENTS.md` / `CLAUDE.md` / Copilot / Cursor rule files — see [AI Agents](https://shellicons.shellui.dev/docs/ai-agents)
 - [x] Static build for GitHub Pages ([shellicons.shellui.dev](https://shellicons.shellui.dev)) — deploys on push to `main`
 - [ ] MAUI: check rendering on Android/iOS devices, then publish
@@ -226,7 +226,7 @@ Serves at http://localhost:5145. Pages live in `docs/ShellIcons.Docs/content/doc
 
 `/docs/icons` is a searchable browser of the entire catalog with click-to-copy component names.
 
-Build the static site the way the deploy workflow does (needs `dotnet tool install -g ShellDocs.CLI --version 0.1.17-alpha`):
+Build the static site the way the deploy workflow does (needs `dotnet tool install -g ShellDocs.CLI --version 0.1.19-alpha`):
 
 ```bash
 cd docs/ShellIcons.Docs
