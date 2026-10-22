@@ -41,7 +41,8 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(IsPackable)' == 'true'">
-    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
+    <!-- Each package ships its own readme; the root README.md is for GitHub. -->
+    <None Include="$(MSBuildProjectDirectory)/README.md" Pack="true" PackagePath="\" />
     <None Include="$(MSBuildThisFileDirectory)NOTICE.md" Pack="true" PackagePath="\" />
     <None Include="$(MSBuildThisFileDirectory)assets/icon.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>

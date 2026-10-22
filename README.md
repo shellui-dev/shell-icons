@@ -1,160 +1,50 @@
-![ShellIcons](https://raw.githubusercontent.com/shellui-dev/shell-icons/main/assets/readme-logo.svg)
+<div align="center">
+
+<img src="assets/readme-logo.svg" alt="ShellIcons logo" width="64" height="64">
 
 # ShellIcons
 
-Lucide-derived SVG icons for **Blazor**, **Avalonia**, and **.NET MAUI**.
+Lucide-derived icons for **Blazor**, **.NET MAUI** and **Avalonia**.
 
-- Zero JS, zero required CSS
-- Same visual system across all three .NET UI frameworks
-- Native rendering per target: inline `<svg>` in Blazor, native `Path` shapes in MAUI, direct drawing in Avalonia
-- Tree-shakeable typed components per icon
+[Docs](https://shellicons.shellui.dev) · [NuGet](https://www.nuget.org/packages?q=ShellIcons) · [Changelog](CHANGELOG.md)
 
-Docs: [shellicons.shellui.dev](https://shellicons.shellui.dev)
+</div>
 
-## Status
+- One catalog (1,555 Lucide 0.475.0 icons plus drop-in custom icons), the same names on every target
+- Native rendering per target: inline `<svg>` in Blazor, native `Path` shapes in MAUI, direct drawing in Avalonia, all converted at build time
+- Typed components per icon that trim, plus a dispatcher when the icon is a value
+- Zero JS and zero required CSS in Blazor
+- Docs for AI agents: [`/llms.txt`](https://shellicons.shellui.dev/llms.txt), every page as Markdown, and `AGENTS.md` / `CLAUDE.md` / Copilot / Cursor rule files ([AI Agents](https://shellicons.shellui.dev/docs/ai-agents))
 
-| Package | Status |
-|---|---|
-| `ShellIcons.Blazor` | **0.1.0-alpha on [NuGet](https://www.nuget.org/packages/ShellIcons.Blazor)** — 1,555 Lucide 0.475.0 icons |
-| `ShellIcons.Maui` | **Preview, unpublished** — builds for Android, iOS, Mac Catalyst and Windows; see [src/ShellIcons.Maui](src/ShellIcons.Maui/README.md) |
-| `ShellIcons.Avalonia` | **Preview, unpublished** — Avalonia 12, `net8.0`; see [src/ShellIcons.Avalonia](src/ShellIcons.Avalonia/README.md) |
+## Packages
 
-- [x] Source generators emit every icon from the vendored catalog (`LUCIDE_VERSION.txt`) plus drop-in `catalog/custom/` icons
-- [x] Blazor: suffixed components (`<ChevronRightIcon />`), `Icon.*` factory, `<ShellIcon Name>` dispatcher — safe next to UI kits
-- [x] MAUI: typed controls, `IconName` dispatcher, `IconCatalog` metadata with alias lookup
-- [x] Avalonia: typed controls, `Kind` dispatcher, inherited `Foreground`, the same `IconCatalog`
-- [x] 168 tests (xUnit + bUnit + headless MAUI + headless Avalonia with Skia rendering), CI for both solutions, tag-driven release — see [RELEASING.md](RELEASING.md)
-- [x] Docs site at [docs/ShellIcons.Docs](docs/ShellIcons.Docs) (ShellDocs 0.1.19-alpha), with a searchable icon browser
-- [x] Docs for AI agents: [`/llms.txt`](https://shellicons.shellui.dev/llms.txt), every page as Markdown, and `AGENTS.md` / `CLAUDE.md` / Copilot / Cursor rule files — see [AI Agents](https://shellicons.shellui.dev/docs/ai-agents)
-- [x] Static build for GitHub Pages ([shellicons.shellui.dev](https://shellicons.shellui.dev)) — deploys on push to `main`
-- [ ] MAUI: check rendering on Android/iOS devices, then publish
-- [ ] Avalonia: run in a real desktop app, then publish
+| Package | Status | Readme |
+|---|---|---|
+| `ShellIcons.Blazor` | [![NuGet](https://img.shields.io/nuget/vpre/ShellIcons.Blazor)](https://www.nuget.org/packages/ShellIcons.Blazor) | [src/ShellIcons.Blazor](src/ShellIcons.Blazor/README.md) |
+| `ShellIcons.Maui` | [![NuGet](https://img.shields.io/nuget/vpre/ShellIcons.Maui)](https://www.nuget.org/packages/ShellIcons.Maui) preview | [src/ShellIcons.Maui](src/ShellIcons.Maui/README.md) |
+| `ShellIcons.Avalonia` | [![NuGet](https://img.shields.io/nuget/vpre/ShellIcons.Avalonia)](https://www.nuget.org/packages/ShellIcons.Avalonia) preview | [src/ShellIcons.Avalonia](src/ShellIcons.Avalonia/README.md) |
 
-## Blazor quickstart
+## Quickstart
 
-Not yet published. During development:
+Blazor:
 
-```xml
-<ProjectReference Include="path/to/src/ShellIcons.Blazor/ShellIcons.Blazor.csproj" />
+```bash
+dotnet add package ShellIcons.Blazor
 ```
-
-### Pick your API
-
-Four ways to render an icon — all produce identical SVG. Only the first two are safe to use next to a UI kit.
-
-| API | Import | Collides with UI kits? | Tree-shakeable? | Use for |
-|---|---|---|---|---|
-| **`<ChevronRightIcon />`** suffixed component | `@using ShellIcons` | ✅ No | ✅ Yes | **Default for markup.** Reads as an icon, full parameter binding. |
-| **`@Icon.ChevronRight()`** factory | `@using ShellIcons` | ✅ No | ✅ Yes | **Icons as values** — `RenderFragment` parameters, nav-item lists, configs. |
-| `<ShellIcon Name="chevron-right" />` dispatcher | `@using ShellIcons` | ✅ No | ❌ Roots all 1,555 | Names only known at runtime (CMS, JSON, markdown). |
-| `<ChevronRight />` flat component | `@using ShellIcons.Icons` | ⚠️ Yes — RZ9985 on Badge, Table, Menu, Router, Card… | ✅ Yes | Icon-only files with no UI kit imported. |
-
-One `@using ShellIcons` in `_Imports.razor` gives you the first three.
-
-#### `<ChevronRightIcon />` — suffixed components (recommended for markup)
-
-Every icon is also emitted as `{Name}Icon` in the root `ShellIcons` namespace. The suffix keeps names clear of UI-kit components and tells readers "this is an icon" at a glance — the same alias `lucide-react` ships.
 
 ```razor
 @using ShellIcons
 
 <ChevronRightIcon />
 <ZapIcon Size="16" StrokeWidth="1.5" />
-<TriangleAlertIcon Class="text-warning" />
-<XIcon Title="Close dialog" />
+<ShellIcon Name="@page.IconName" />
 ```
 
-One exception: Lucide's `shell` icon would be `ShellIcon`, which is the dispatcher, so it has no suffixed form — use `@Icon.Shell()`.
+.NET MAUI:
 
-#### `@Icon.ChevronRight()` — factory (icons as values)
-
-Every icon has a static method on `Icon` returning a `RenderFragment`. Use it wherever an icon is *data* rather than markup:
-
-```razor
-@* A component parameter typed RenderFragment *@
-<NavItem Href="/" Label="Home" Icon="@Icon.House()" />
-
-@* A list built in C# *@
-@code {
-    private readonly (string Label, RenderFragment Icon)[] _items =
-    [
-        ("Inbox",    Icon.Inbox()),
-        ("Settings", Icon.Settings(size: "16")),
-    ];
-}
+```bash
+dotnet add package ShellIcons.Maui --prerelease
 ```
-
-A call with no arguments returns a cached fragment, so `@Icon.Plus()` in a hot render path doesn't allocate.
-
-#### `<ShellIcon Name="…" />` — dispatcher
-
-Runtime lookup by kebab-case name, for icons whose identity is data-driven. Referencing it roots the full catalog, so prefer the two forms above when the name is known at compile time.
-
-```razor
-<ShellIcon Name="chevron-right" />
-<ShellIcon Name="@page.IconName" Size="20" />
-```
-
-#### `<ChevronRight />` — flat components (⚠️ RZ9985 trap)
-
-`@using ShellIcons.Icons` puts all 1,555 unprefixed names into your tag lookup. With a UI kit that has `Badge`, `Table`, `Router`, etc., you get RZ9985 collisions.
-
-**Workarounds that don't work** (verified by real integrators):
-
-- `@using Icon = ShellIcons.Icons` then `<Icon.Plus />` — Razor's tag matcher ignores namespace aliases; the tag compiles as an unknown HTML element and **renders blank**.
-- Type aliases (`@using Badge = MyApp.UI.Badge`) — ignored by the tag matcher too.
-
-Use the suffixed components instead, or fully qualify: `<ShellIcons.Icons.ChevronRight />`.
-
-### Using icons inside component libraries
-
-**Buttons and similar containers — just put the icon in the content.** No `Icon` slot needed; the component's CSS sizes child SVGs (shadcn's `[&_svg]:size-4`):
-
-```razor
-<Button><ChevronRightIcon /> Next</Button>
-```
-
-**Components that place the icon somewhere specific** (input adornments, alerts, nav items) take a `RenderFragment` parameter — pass the factory:
-
-```razor
-<Input StartIcon="@Icon.Search()" Placeholder="Search…" />
-```
-
-### Click handlers
-
-Put handlers on a wrapping `<button>` — screen readers expect that. If you must attach one to the icon itself, drop the `@`:
-
-```razor
-<button @onclick="Save" aria-label="Save"><SaveIcon /></button>   @* ✅ recommended *@
-<SaveIcon onclick="@(() => Save())" />                             @* ✅ works *@
-<SaveIcon @onclick="Save" />                                       @* ❌ throws — see below *@
-```
-
-On a *component*, Razor passes `@onclick="Save"` as a plain string named `@onclick`; the browser then rejects that attribute name and the render batch fails. ShellIcons throws a clear `InvalidOperationException` instead. For the factory, the dictionary key is `"onclick"` (no `@`):
-
-```razor
-@Icon.Bell(additionalAttributes: new Dictionary<string, object>
-{
-    ["onclick"] = EventCallback.Factory.Create(this, HandleClick),
-    ["data-testid"] = "notifications",
-})
-```
-
-### Colors and accessibility
-
-Colors inherit from CSS `color` (`stroke="currentColor"`):
-
-```razor
-<span style="color: crimson"><TriangleAlertIcon Size="20" /></span>
-```
-
-Without `Title` icons are decorative (`aria-hidden="true"`); with it they get `role="img"` + `<title>`:
-
-```razor
-<XIcon Title="Close dialog" />
-```
-
-## MAUI quickstart (preview)
 
 ```xml
 <ContentPage xmlns:icons="https://shellicons.dev/maui">
@@ -163,18 +53,20 @@ Without `Title` icons are decorative (`aria-hidden="true"`); with it they get `r
 </ContentPage>
 ```
 
-Not on NuGet yet — reference `src/ShellIcons.Maui` from source. Docs: [MAUI getting started](docs/ShellIcons.Docs/content/docs/maui/getting-started.md).
+Avalonia:
 
-## Avalonia quickstart (preview)
+```bash
+dotnet add package ShellIcons.Avalonia --prerelease
+```
 
 ```xml
 <Window xmlns:icons="https://shellicons.dev/avalonia">
     <icons:ChevronRight Size="16" />
-    <icons:Icon Kind="{Binding StatusIcon}" Foreground="Crimson" />
+    <icons:Icon Kind="{Binding StatusIcon}" Foreground="{DynamicResource AccentBrush}" />
 </Window>
 ```
 
-Icons inherit `Foreground`, so they match the surrounding text by default. Not on NuGet yet — reference `src/ShellIcons.Avalonia` from source. Docs: [Avalonia getting started](docs/ShellIcons.Docs/content/docs/avalonia/getting-started.md).
+Avalonia's dispatcher uses `Kind` because every Avalonia control already has `Name`. The full guides are in each package's readme and on the [docs site](https://shellicons.shellui.dev).
 
 ## Repo layout
 
@@ -204,12 +96,12 @@ shell-icons/
 │   ├── ShellIcons.Generator.Tests/  xUnit: SvgParser, Naming, path conversion
 │   ├── ShellIcons.Blazor.Tests/     xUnit + bUnit: components, factory, dispatcher, collisions
 │   ├── ShellIcons.Maui.Tests/       headless MAUI: controls, XAML, whole-catalog geometry
-│   └── ShellIcons.Avalonia.Tests/   headless Avalonia + Skia: controls, XAML, whole-catalog rendering
+│   └── ShellIcons.Avalonia.Tests/   headless Avalonia with Skia: controls, XAML, renders of every icon
 ├── docs/
 │   └── ShellIcons.Docs/       ShellDocs site — dev at http://localhost:5145
 └── .github/workflows/
     ├── ci.yml                 ubuntu: ShellIcons.slnx · windows: ShellIcons.Maui.slnx
-    ├── release.yml            tag → NuGet (Trusted Publishing) + GitHub Release
+    ├── release.yml            tag → all three packages on NuGet (Trusted Publishing) + GitHub Release
     └── docs.yml               static build → GitHub Pages
 ```
 
@@ -244,7 +136,7 @@ Every page under `content/` is prerendered to plain HTML, so any static host can
 
 ## Adding custom icons
 
-Drop an SVG into [catalog/custom/icons/](catalog/custom/icons/) and rebuild — the Phase 2 source generator picks it up automatically and emits a component into `ShellIcons.Blazor`. Same 24×24 stroke contract as Lucide. See [catalog/custom/README.md](catalog/custom/README.md) for the drop-in contract.
+Drop an SVG into [catalog/custom/icons/](catalog/custom/icons/) and rebuild — the source generators pick it up and emit it into every package. Same 24×24 stroke contract as Lucide. See [catalog/custom/README.md](catalog/custom/README.md) for the drop-in contract.
 
 Custom icons live alongside Lucide-derived icons in the same namespace; consumers can't tell them apart. Use them for:
 

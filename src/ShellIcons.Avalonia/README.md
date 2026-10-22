@@ -1,9 +1,15 @@
+![ShellIcons](https://raw.githubusercontent.com/shellui-dev/shell-icons/main/assets/readme-logo.svg)
+
 # ShellIcons.Avalonia (preview)
 
 Lucide-derived icons for Avalonia, from the same 1,555-icon catalog as `ShellIcons.Blazor` and
 `ShellIcons.Maui`. Docs: [shellicons.shellui.dev/docs/avalonia/getting-started](https://shellicons.shellui.dev/docs/avalonia/getting-started).
 
-Not published yet. The release workflow only packs `ShellIcons.Blazor`.
+## Install
+
+```bash
+dotnet add package ShellIcons.Avalonia --prerelease
+```
 
 Targets `net8.0` and Avalonia 12.1.
 
