@@ -37,7 +37,7 @@ jobs:
       - name: Test
         run: dotnet test ShellIcons.slnx --configuration Release --no-build --verbosity normal
 
-      # The project, not the solution: packing the solution warns for every non-packable project.
+      # The projects, not the solution: packing the solution warns for every non-packable project.
       - name: Smoke pack
         run: |
           dotnet pack src/ShellIcons.Blazor/ShellIcons.Blazor.csproj --configuration Release --no-build --output nupkgs
@@ -69,3 +69,8 @@ jobs:
 
       - name: Test
         run: dotnet test tests/ShellIcons.Maui.Tests --configuration Release --no-build --verbosity normal
+
+      - name: Smoke pack
+        run: dotnet pack src/ShellIcons.Maui/ShellIcons.Maui.csproj --configuration Release --no-build --output nupkgs
+        env:
+          ContinuousIntegrationBuild: true
