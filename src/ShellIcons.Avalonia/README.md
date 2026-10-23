@@ -74,11 +74,5 @@ one visual.
 ## Verified
 
 - Builds with zero warnings; part of `ShellIcons.slnx`, so it needs no extra workloads.
-- 33 headless tests that render through Skia: every icon parses, stays on the 24×24 grid and draws ink inside its own cell; size, stroke, color, XAML namespace and accessibility are checked from real pixels or the real property system.
-- **Not yet verified:** a real desktop window on Windows, macOS or Linux. The headless renderer uses the same Skia backend, so differences are unlikely, but nobody has looked.
-
-## Before publishing
-
-- Run it once in a real Avalonia app on each desktop OS.
-- Give the package its own readme — `Directory.Build.props` currently packs the repo's Blazor-centric `README.md` into every package.
-- Add `ShellIcons.Avalonia` to the pack step and the "already published" check in `release.yml`. It packs on ubuntu, so no new job is needed.
+- 34 headless tests that render through Skia: every icon parses, stays on the 24×24 grid and draws ink inside its own cell; size, stroke, color, XAML namespace and accessibility are checked from real pixels or the real property system. One test checks the 110 icon names ShellUI Native uses.
+- Installed from the packed package into a fresh `dotnet new avalonia.app` on Windows: icons render in a desktop window, a `DynamicResource` brush recolors them, and a click on an icon inside a `Button` reaches the button. Not yet looked at on macOS or Linux.
