@@ -1,6 +1,10 @@
 <div align="center">
 
-<img src="assets/readme-logo.svg" alt="ShellIcons logo" width="64" height="64">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="assets/logo-light.svg">
+  <img alt="ShellIcons logo" src="assets/logo-light.svg" width="120">
+</picture>
 
 # ShellIcons
 
