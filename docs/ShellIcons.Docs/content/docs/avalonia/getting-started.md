@@ -8,16 +8,14 @@ order: 1
 
 The same Lucide catalog as the Blazor and MAUI packages, drawn directly by Avalonia. The SVG is converted at build time, so nothing parses SVG in your app.
 
-<Callout Variant="warning" Title="Preview — not on NuGet yet">
-ShellIcons.Avalonia is covered by tests that render every icon through Avalonia's Skia backend, but it hasn't been run in a real desktop window yet. Reference the project from source until it's published.
+<Callout Variant="warning" Title="Preview">
+ShellIcons.Avalonia is covered by tests that render every icon through Avalonia's Skia backend and checked in a desktop app, but the API may still change before 1.0.
 </Callout>
 
 ## Install
 
-Until the package is published, reference the project. No extra workloads are needed.
-
-```xml
-<ProjectReference Include="path/to/shell-icons/src/ShellIcons.Avalonia/ShellIcons.Avalonia.csproj" />
+```bash
+dotnet add package ShellIcons.Avalonia --prerelease
 ```
 
 Targets `net8.0` and Avalonia 12.1.

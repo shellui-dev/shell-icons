@@ -11,7 +11,7 @@
 
   <!-- Version. Bump here before tagging a release. See RELEASING.md. -->
   <PropertyGroup>
-    <Version>0.1.0-alpha</Version>
+    <Version>0.2.0-alpha</Version>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -41,7 +41,8 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(IsPackable)' == 'true'">
-    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
+    <!-- Each package ships its own readme; the root README.md is for GitHub. -->
+    <None Include="$(MSBuildProjectDirectory)/README.md" Pack="true" PackagePath="\" />
     <None Include="$(MSBuildThisFileDirectory)NOTICE.md" Pack="true" PackagePath="\" />
     <None Include="$(MSBuildThisFileDirectory)assets/icon.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>

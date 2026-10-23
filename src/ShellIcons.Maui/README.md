@@ -1,9 +1,17 @@
+![ShellIcons](https://raw.githubusercontent.com/shellui-dev/shell-icons/main/assets/readme-logo.svg)
+
 # ShellIcons.Maui (preview)
 
 Lucide-derived icons for .NET MAUI as native `Path` shapes, from the same 1,555-icon catalog as
 `ShellIcons.Blazor`. Docs: [shellicons.shellui.dev/docs/maui/getting-started](https://shellicons.shellui.dev/docs/maui/getting-started).
 
-Not published yet. The release workflow only packs `ShellIcons.Blazor`.
+## Install
+
+```bash
+dotnet add package ShellIcons.Maui --prerelease
+```
+
+Targets `net10.0-android`, `net10.0-ios`, `net10.0-maccatalyst` and `net10.0-windows10.0.19041.0`.
 
 ## Use
 
@@ -74,17 +82,11 @@ caches it, so every control showing the same icon shares one geometry.
 | No consumer-selected icon subsets yet | The generator runs when this package is built, not in the consumer's build, so it can't see which icons an app wants. Typed controls already trim unused icons. |
 | Same `IconName` / `Icon` names as ShellUI Native's interim icon component | ShellUI Native can switch to this package without changing its components. |
 
-The conversion contract for custom icons is in [catalog/custom/README.md](../../catalog/custom/README.md); both generators share one naming rule (`Naming.KebabToPascal`).
+The conversion contract for custom icons is in [catalog/custom/README.md](https://github.com/shellui-dev/shell-icons/blob/main/catalog/custom/README.md); both generators share one naming rule (`Naming.KebabToPascal`).
 
 ## Verified
 
 - Builds with zero warnings for `net10.0`, `net10.0-android`, `net10.0-ios`, `net10.0-maccatalyst`, `net10.0-windows10.0.19041.0` (on Windows, with the MAUI workloads).
 - Tests on the plain `net10.0` build, including a compiled XAML fixture (xmlns, string → `IconName`, `icons:Image` next to MAUI's `Image`).
 - A check that parses every icon into MAUI geometry and keeps every endpoint on the 24×24 grid. It caught a stray off-canvas shape in Lucide's own `save-off.svg`.
-- **Not yet verified:** how it looks on a real device or emulator. The rendering follows the approach ShellUI Native verified on WinUI (`Aspect=None`, scale transform, explicit stroke scaling), but nobody has looked at it on Android or iOS yet.
-
-## Before publishing
-
-- Look at it on Android and iOS devices.
-- Give the package its own readme — `Directory.Build.props` currently packs the repo's Blazor-centric `README.md` into every package.
-- Add `ShellIcons.Maui` to `release.yml` (the job must run on Windows or macOS with the MAUI workload).
+- Rendered in a Windows app from the packed package. Not yet looked at on Android or iOS devices.

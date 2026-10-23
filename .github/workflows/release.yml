@@ -17,11 +17,15 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    # Windows: ShellIcons.Maui needs the MAUI workload for its Android, iOS, Mac Catalyst and Windows targets.
+    runs-on: windows-latest
     environment: release
     permissions:
       contents: write        # for creating the GitHub Release
       id-token: write        # required for Trusted Publishing OIDC exchange
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,19 +43,31 @@ jobs:
             8.0.x
             9.0.x
 
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
       - name: Restore
-        run: dotnet restore ShellIcons.slnx
+        run: |
+          dotnet restore ShellIcons.slnx
+          dotnet restore ShellIcons.Maui.slnx
 
       - name: Build
-        run: dotnet build ShellIcons.slnx --configuration Release --no-restore
+        run: |
+          dotnet build ShellIcons.slnx --configuration Release --no-restore
+          dotnet build ShellIcons.Maui.slnx --configuration Release --no-restore
         env:
           ContinuousIntegrationBuild: true
 
       - name: Test
-        run: dotnet test ShellIcons.slnx --configuration Release --no-build --verbosity normal
+        run: |
+          dotnet test ShellIcons.slnx --configuration Release --no-build --verbosity normal
+          dotnet test tests/ShellIcons.Maui.Tests --configuration Release --no-build --verbosity normal
 
       - name: Pack
-        run: dotnet pack src/ShellIcons.Blazor/ShellIcons.Blazor.csproj --configuration Release --no-build --output nupkgs
+        run: |
+          for project in ShellIcons.Blazor ShellIcons.Maui ShellIcons.Avalonia; do
+            dotnet pack "src/$project/$project.csproj" --configuration Release --no-build --output nupkgs
+          done
         env:
           ContinuousIntegrationBuild: true
 
@@ -85,7 +101,7 @@ jobs:
         if: github.event_name == 'push' || inputs.dry_run == false
         run: |
           version=$(grep -oE '<Version>[^<]+' Directory.Build.props | head -1 | sed 's/<Version>//')
-          for pkg in ShellIcons.Blazor; do
+          for pkg in ShellIcons.Blazor ShellIcons.Maui ShellIcons.Avalonia; do
             lower=$(echo "$pkg" | tr '[:upper:]' '[:lower:]')
             existing=$(curl -sf "https://api.nuget.org/v3-flatcontainer/${lower}/index.json" 2>/dev/null | grep -oE '"[^"]*"' | tr -d '"' || echo "")
             if echo "$existing" | grep -Fxq "$version"; then

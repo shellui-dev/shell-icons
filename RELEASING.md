@@ -1,10 +1,10 @@
 # Releasing ShellIcons
 
-How to ship a new version of `ShellIcons.Blazor` to NuGet.org and create the matching GitHub Release.
+How to ship a new version of `ShellIcons.Blazor`, `ShellIcons.Maui` and `ShellIcons.Avalonia` to NuGet.org and create the matching GitHub Release.
 
 **Who can release:** anyone who can approve the `release` environment on GitHub. Contributors without that access open a PR; a maintainer does the release.
 
-**What's released:** only `ShellIcons.Blazor`. `ShellIcons.Maui` and `ShellIcons.Avalonia` are in preview — `release.yml` doesn't pack them yet. Publishing MAUI will need a Windows or macOS job with the MAUI workload; Avalonia packs on ubuntu, so it only needs adding to the existing pack step and the "already published" check. The docs site isn't part of a release either: it deploys to [shellicons.shellui.dev](https://shellicons.shellui.dev) on every push to `main` (`docs.yml`).
+**What's released:** all three packages, at the one version in `Directory.Build.props`. `release.yml` runs on `windows-latest` and installs the MAUI workload, because `ShellIcons.Maui` builds for Android, iOS, Mac Catalyst and Windows. The docs site isn't part of a release either: it deploys to [shellicons.shellui.dev](https://shellicons.shellui.dev) on every push to `main` (`docs.yml`).
 
 Publishing uses **NuGet Trusted Publishing** — GitHub Actions authenticates via OIDC and gets a short-lived (~1 hour) API key per run. No long-lived key lives in the repo.
 
@@ -91,10 +91,13 @@ Merge it to `main`.
 
 ```bash
 dotnet test ShellIcons.slnx --configuration Release
+dotnet test tests/ShellIcons.Maui.Tests --configuration Release
 dotnet pack src/ShellIcons.Blazor/ShellIcons.Blazor.csproj --configuration Release --output nupkgs
+dotnet pack src/ShellIcons.Maui/ShellIcons.Maui.csproj --configuration Release --output nupkgs
+dotnet pack src/ShellIcons.Avalonia/ShellIcons.Avalonia.csproj --configuration Release --output nupkgs
 ```
 
-Should produce `nupkgs/ShellIcons.Blazor.<version>.nupkg` and `.snupkg`.
+Should produce a `.nupkg` and `.snupkg` for each package. The MAUI steps need `dotnet workload install maui` (Windows or macOS).
 
 ### 4. Tag the release
 
@@ -114,7 +117,7 @@ Pushing the tag triggers `.github/workflows/release.yml`. Because of the `releas
 
 ### 6. Verify
 
-- **NuGet.org**: <https://www.nuget.org/packages/ShellIcons.Blazor> — should show the new version within a couple of minutes (indexing) and be installable after ~10 minutes.
+- **NuGet.org**: [ShellIcons.Blazor](https://www.nuget.org/packages/ShellIcons.Blazor), [ShellIcons.Maui](https://www.nuget.org/packages/ShellIcons.Maui), [ShellIcons.Avalonia](https://www.nuget.org/packages/ShellIcons.Avalonia) — each should show the new version within a couple of minutes (indexing) and be installable after ~10 minutes.
 - **GitHub Release**: <https://github.com/shellui-dev/shell-icons/releases> — auto-generated release notes based on merged PRs since the last tag, with `.nupkg` + `.snupkg` attached.
 
 ## What the workflow does, step by step
@@ -123,13 +126,16 @@ Pushing the tag triggers `.github/workflows/release.yml`. Because of the `releas
 push tag v<version>
         │
         ▼
-   [checkout with full history]
+   [checkout with full history, windows-latest]
         │
         ▼
-   [restore + build (Release) + test]
+   [install MAUI workload]
         │
         ▼
-   [dotnet pack → nupkgs/ShellIcons.Blazor.<v>.nupkg + .snupkg]
+   [restore + build (Release) + test: ShellIcons.slnx, ShellIcons.Maui.slnx]
+        │
+        ▼
+   [dotnet pack → nupkgs/ShellIcons.{Blazor,Maui,Avalonia}.<v>.nupkg + .snupkg]
         │
         ▼
    [verify tag == Directory.Build.props version]     ← fails if mismatch
