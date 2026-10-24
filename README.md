@@ -80,7 +80,7 @@ shell-icons/
 ├── RELEASING.md                how to cut a release
 ├── LUCIDE_VERSION.txt         pinned upstream tag
 ├── NOTICE.md                  Lucide ISC attribution
-├── ShellIcons.slnx             Blazor, Avalonia, generators, tests, docs — no MAUI workload needed
+├── ShellIcons.slnx             Blazor, Avalonia, generators, tests — no MAUI workload needed
 ├── ShellIcons.Maui.slnx        MAUI projects — needs `dotnet workload install maui`
 ├── Directory.Build.props
 ├── catalog/
@@ -101,35 +101,14 @@ shell-icons/
 │   ├── ShellIcons.Blazor.Tests/     xUnit + bUnit: components, factory, dispatcher, collisions
 │   ├── ShellIcons.Maui.Tests/       headless MAUI: controls, XAML, whole-catalog geometry
 │   └── ShellIcons.Avalonia.Tests/   headless Avalonia with Skia: controls, XAML, renders of every icon
-├── docs/
-│   └── ShellIcons.Docs/       ShellDocs site — dev at http://localhost:5145
 └── .github/workflows/
     ├── ci.yml                 ubuntu: ShellIcons.slnx · windows: ShellIcons.Maui.slnx
-    ├── release.yml            tag → all three packages on NuGet (Trusted Publishing) + GitHub Release
-    └── docs.yml               static build → GitHub Pages
+    └── release.yml            tag → all three packages on NuGet (Trusted Publishing) + GitHub Release
 ```
 
 ## Docs
 
-Run the docs locally:
-
-```bash
-cd docs/ShellIcons.Docs
-dotnet run
-```
-
-Serves at http://localhost:5145. Pages live in `docs/ShellIcons.Docs/content/docs/*.md`. Live component previews via `razor:preview` code fences work out of the box.
-
-`/docs/icons` is a searchable browser of the entire catalog with click-to-copy component names.
-
-Build the static site the way the deploy workflow does (needs `dotnet tool install -g ShellDocs.CLI --version 0.1.19-alpha`):
-
-```bash
-cd docs/ShellIcons.Docs
-shelldocs build --output ../../publish --spa-fallback --site-url https://shellicons.shellui.dev
-```
-
-Every page under `content/` is prerendered to plain HTML, so any static host can serve `publish/`. Pages added as Razor `@page` routes outside `content/` are not prerendered — put new pages in `content/` (a component can be used from markdown, as `content/docs/icons.md` does).
+The docs site, [shellicons.shellui.dev](https://shellicons.shellui.dev), lives in its own repo: [shellui-dev/shell-icons-docs](https://github.com/shellui-dev/shell-icons-docs). It uses the published packages, so update it after a release.
 
 ## Refreshing the Lucide catalog
 

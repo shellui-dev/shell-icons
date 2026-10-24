@@ -4,7 +4,7 @@ How to ship a new version of `ShellIcons.Blazor`, `ShellIcons.Maui` and `ShellIc
 
 **Who can release:** anyone who can approve the `release` environment on GitHub. Contributors without that access open a PR; a maintainer does the release.
 
-**What's released:** all three packages, at the one version in `Directory.Build.props`. `release.yml` runs on `windows-latest` and installs the MAUI workload, because `ShellIcons.Maui` builds for Android, iOS, Mac Catalyst and Windows. The docs site isn't part of a release either: it deploys to [shellicons.shellui.dev](https://shellicons.shellui.dev) on every push to `main` (`docs.yml`).
+**What's released:** all three packages, at the one version in `Directory.Build.props`. `release.yml` runs on `windows-latest` and installs the MAUI workload, because `ShellIcons.Maui` builds for Android, iOS, Mac Catalyst and Windows. The docs site isn't part of a release: it lives in [shellui-dev/shell-icons-docs](https://github.com/shellui-dev/shell-icons-docs) and uses the published packages, so bump `ShellIcons.Blazor` there after a release.
 
 Publishing uses **NuGet Trusted Publishing** — GitHub Actions authenticates via OIDC and gets a short-lived (~1 hour) API key per run. No long-lived key lives in the repo.
 
