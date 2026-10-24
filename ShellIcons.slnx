@@ -4,9 +4,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Folder Name="/docs/">
-    <Project Path="docs/ShellIcons.Docs/ShellIcons.Docs.csproj" />
-  </Folder>
   <Folder Name="/src/">
     <Project Path="src/ShellIcons.Avalonia/ShellIcons.Avalonia.csproj" />
     <Project Path="src/ShellIcons.Blazor/ShellIcons.Blazor.csproj" />
