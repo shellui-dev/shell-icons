@@ -28,8 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="..\..\catalog\lucide\icons\*.svg" />
-    <AdditionalFiles Include="..\..\catalog\custom\icons\*.svg" />
+    <!-- The .json sidecars list each icon's former names, which stay usable as aliases. -->
+    <AdditionalFiles Include="..\..\catalog\lucide\icons\*.svg;..\..\catalog\lucide\icons\*.json" />
+    <AdditionalFiles Include="..\..\catalog\custom\icons\*.svg;..\..\catalog\custom\icons\*.json" />
   </ItemGroup>
 
 </Project>

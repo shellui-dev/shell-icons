@@ -17,7 +17,7 @@ public class RenderTests
     {
         var failures = new List<string>();
 
-        foreach (var name in Enum.GetValues<IconName>().Where(n => n != IconName.None))
+        foreach (var name in IconCatalog.All.Select(i => i.Name))
         {
             var (stroke, fill) = IconData.Get(name);
             if (string.IsNullOrEmpty(stroke) && fill is null)
@@ -48,7 +48,7 @@ public class RenderTests
     [AvaloniaFact]
     public void EveryIcon_DrawsInk_InsideItsCell()
     {
-        var names = Enum.GetValues<IconName>().Where(n => n != IconName.None).ToArray();
+        var names = IconCatalog.All.Select(i => i.Name).ToArray();
         const int columns = 40;
         var rows = (names.Length + columns - 1) / columns;
 

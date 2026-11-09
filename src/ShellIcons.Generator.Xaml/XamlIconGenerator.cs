@@ -43,12 +43,16 @@ public sealed class XamlIconGenerator : IIncrementalGenerator
         }
 
         var icons = XamlCatalog.Read(ctx, files);
+        var aliases = XamlCatalog.Aliases(icons);
 
-        ctx.AddSource("IconName.g.cs", SourceText.From(CatalogEmitter.Enum(ns, icons), Encoding.UTF8));
-        ctx.AddSource("IconData.g.cs", SourceText.From(CatalogEmitter.Data(ns, icons), Encoding.UTF8));
-        ctx.AddSource("IconCatalog.g.cs", SourceText.From(CatalogEmitter.Catalog(ns, icons), Encoding.UTF8));
+        ctx.AddSource("IconName.g.cs", SourceText.From(CatalogEmitter.Enum(ns, icons, aliases), Encoding.UTF8));
+        ctx.AddSource("IconData.g.cs", SourceText.From(CatalogEmitter.Data(ns, icons, aliases), Encoding.UTF8));
+        ctx.AddSource("IconCatalog.g.cs", SourceText.From(CatalogEmitter.Catalog(ns, icons, aliases), Encoding.UTF8));
+        ctx.AddSource("IconAliases.g.cs", SourceText.From(CatalogEmitter.AliasControls(ns, aliases), Encoding.UTF8));
+
+        // Hint names use the kebab id: they're compared ignoring case, and letter-s and letters differ only by case.
         foreach (var icon in icons)
-            ctx.AddSource($"Icons/{icon.Pascal}.g.cs", SourceText.From(CatalogEmitter.TypedControl(ns, icon), Encoding.UTF8));
+            ctx.AddSource($"Icons/{icon.Kebab}.g.cs", SourceText.From(CatalogEmitter.TypedControl(ns, icon), Encoding.UTF8));
     }
 
     private static string? NamespaceFor(string target)

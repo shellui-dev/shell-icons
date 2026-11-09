@@ -17,4 +17,9 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" PrivateAssets="all" />
   </ItemGroup>
 
+  <!-- Same sidecar reader as the XAML generator, for the aliases. -->
+  <ItemGroup>
+    <Compile Include="..\ShellIcons.Generator.Xaml\IconMetadataReader.cs" Link="Shared\IconMetadataReader.cs" />
+  </ItemGroup>
+
 </Project>

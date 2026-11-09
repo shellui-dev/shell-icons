@@ -288,11 +288,81 @@ public class IconMetadataReaderTests
     }
 
     [Fact]
-    public void MissingKeys_AreEmpty()
+    public void ObjectAliases_RecordWhichAreDeprecated()
     {
-        var meta = IconMetadataReader.Read("""{ "tags": [] }""");
-        Assert.Empty(meta.Tags);
-        Assert.Empty(meta.Categories);
-        Assert.Empty(meta.Aliases);
+        var json = """{ "aliases": [ { "name": "trash-2", "deprecated": true }, { "name": "bin" } ] }""";
+        var meta = IconMetadataReader.Read(json);
+
+        Assert.Equal(new[] { "trash-2", "bin" }, meta.Aliases);
+        Assert.Equal(new[] { "trash-2" }, meta.DeprecatedAliases);
+    }
+
+    [Fact]
+    public void ResolveDirectives_ExpandsExtendsAndGroups()
+    {
+        var icons = new Dictionary<string, IconMetadata>
+        {
+            ["alarm-clock"] = new(new[] { "morning", "$group:time" }, new[] { "time" }, Array.Empty<string>()),
+            ["alarm-clock-check"] = new(new[] { "$extends:alarm-clock", "$group:check", "wake-up", "morning" }, new[] { "$extends:alarm-clock" }, Array.Empty<string>()),
+            ["receipt"] = new(new[] { "$", "$extends:missing", "$group:missing" }, Array.Empty<string>(), Array.Empty<string>()),
+        };
+        var groups = new Dictionary<string, IReadOnlyList<string>>
+        {
+            ["time"] = new[] { "clock" },
+            ["check"] = new[] { "done", "completed" },
+        };
+
+        var resolved = IconMetadataReader.ResolveDirectives(icons, groups);
+
+        Assert.Equal(new[] { "morning", "clock", "done", "completed", "wake-up" }, resolved["alarm-clock-check"].Tags);
+        Assert.Equal(new[] { "time" }, resolved["alarm-clock-check"].Categories);
+        Assert.Equal(new[] { "$" }, resolved["receipt"].Tags); // a literal "$" tag stays; unknown targets drop
+    }
+
+    [Fact]
+    public void ResolveDirectives_SurvivesACycle()
+    {
+        var icons = new Dictionary<string, IconMetadata>
+        {
+            ["a"] = new(new[] { "$extends:b", "x" }, Array.Empty<string>(), Array.Empty<string>()),
+            ["b"] = new(new[] { "$extends:a", "y" }, Array.Empty<string>(), Array.Empty<string>()),
+        };
+
+        var resolved = IconMetadataReader.ResolveDirectives(icons, new Dictionary<string, IReadOnlyList<string>>());
+
+        Assert.Contains("x", resolved["a"].Tags);
+        Assert.Contains("y", resolved["a"].Tags);
+    }
+}
+
+public class IconAliasesTests
+{
+    private static AliasSource Source(string kebab, string[] aliases, params string[] deprecated) =>
+        new(kebab, Naming.KebabToPascal(kebab), aliases, deprecated);
+
+    [Fact]
+    public void Resolve_GivesFormerNamesTheirOwnIdentifier()
+    {
+        var aliases = IconAliases.Resolve(new[] { Source("trash", new[] { "trash-2" }, "trash-2") });
+
+        var alias = Assert.Single(aliases);
+        Assert.Equal(("trash-2", "Trash2", "trash", "Trash", true), (alias.Kebab, alias.Pascal, alias.TargetKebab, alias.TargetPascal, alias.Deprecated));
+        Assert.Equal("Lucide renamed 'trash-2' to 'trash'. Use Trash.", IconAliases.ObsoleteMessage(alias, "Trash"));
+    }
+
+    [Fact]
+    public void Resolve_SkipsNamesThatClash()
+    {
+        var aliases = IconAliases.Resolve(new[]
+        {
+            Source("arrow-down-0-1", new[] { "arrow-down-01" }),        // same identifier as the icon itself
+            Source("letters", new[] { "letter-s" }),                     // an icon's id
+            Source("trash", new[] { "Trash" }),                          // same identifier, different case
+            Source("square", new[] { "box", "BOX" }),                    // second spelling of one alias
+            Source("circle", new[] { "none" }),                          // reserved
+            Source("letter-s", Array.Empty<string>()),
+        }, reservedNames: new[] { "None" });
+
+        Assert.Equal(new[] { "Box" }, aliases.Select(a => a.Pascal));
     }
 }

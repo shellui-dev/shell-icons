@@ -21,6 +21,7 @@
   <!-- One naming rule for every target. -->
   <ItemGroup>
     <Compile Include="..\ShellIcons.Generator\Naming.cs" Link="Shared\Naming.cs" />
+    <Compile Include="..\ShellIcons.Generator\IconAliases.cs" Link="Shared\IconAliases.cs" />
   </ItemGroup>
 
 </Project>

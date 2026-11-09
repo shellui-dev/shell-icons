@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using ShellIcons.Generator;
 
 namespace ShellIcons.Generator.Xaml;
 
@@ -69,9 +70,7 @@ internal static class XamlCatalog
 
     public static XamlIcon[] Read(SourceProductionContext ctx, ImmutableArray<SourceFile> files)
     {
-        var metadata = new Dictionary<string, IconMetadata>(StringComparer.Ordinal);
-        foreach (var f in files.Where(f => f.Path.EndsWith(".json", StringComparison.OrdinalIgnoreCase)))
-            metadata[Key(f.Path)] = IconMetadataReader.Read(f.Content);
+        var metadata = ReadMetadata(files);
 
         var resolved = new Dictionary<string, XamlIcon>(StringComparer.Ordinal);
         foreach (var f in files.Where(f => f.Path.EndsWith(".svg", StringComparison.OrdinalIgnoreCase)))
@@ -102,7 +101,7 @@ internal static class XamlCatalog
             }
 
             var icon = new XamlIcon(kebab, pascal, pack, shapes,
-                metadata.TryGetValue(Key(f.Path), out var m) ? m : IconMetadata.Empty);
+                metadata.TryGetValue(kebab, out var m) ? m : IconMetadata.Empty);
 
             if (!resolved.TryGetValue(kebab, out var existing))
             {
@@ -118,12 +117,28 @@ internal static class XamlCatalog
         return resolved.Values.OrderBy(i => i.Kebab, StringComparer.Ordinal).ToArray();
     }
 
-    // Pairs "…/catalog/lucide/icons/house.svg" with "…/catalog/lucide/icons/house.json".
-    private static string Key(string path)
+    /// <summary>Former names that get their own enum member and control (<c>Trash2</c> → <c>Trash</c>).</summary>
+    public static IReadOnlyList<IconAlias> Aliases(XamlIcon[] icons) =>
+        IconAliases.Resolve(icons.Select(i => new AliasSource(i.Kebab, i.Pascal, i.Meta.Aliases, i.Meta.DeprecatedAliases)), new[] { "None" });
+
+    /* Sidecars by icon id (a custom one replaces Lucide's), with Lucide 1.x's "$extends:" and "$group:"
+       tag directives expanded; the tag groups come from catalog/lucide/groups/. */
+    private static Dictionary<string, IconMetadata> ReadMetadata(ImmutableArray<SourceFile> files)
     {
-        var normalized = path.Replace('\\', '/');
-        var dot = normalized.LastIndexOf('.');
-        return dot < 0 ? normalized : normalized.Substring(0, dot);
+        var icons = new Dictionary<string, IconMetadata>(StringComparer.Ordinal);
+        var groups = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
+
+        foreach (var f in files.Where(f => f.Path.EndsWith(".json", StringComparison.OrdinalIgnoreCase)))
+        {
+            var path = f.Path.Replace('\\', '/');
+            var id = Path.GetFileNameWithoutExtension(path);
+            var meta = IconMetadataReader.Read(f.Content);
+
+            if (path.Contains("/catalog/lucide/groups/")) groups[id] = meta.Tags;
+            else if (path.Contains("/catalog/custom/") || !icons.ContainsKey(id)) icons[id] = meta;
+        }
+
+        return IconMetadataReader.ResolveDirectives(icons, groups);
     }
 
     private static string ResolvePack(string path) =>

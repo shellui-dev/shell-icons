@@ -6,8 +6,11 @@ public class CatalogTests
     public void Enum_HasEveryIcon_PlusNone()
     {
         Assert.True(IconCatalog.Count > 1500, $"catalog has {IconCatalog.Count} icons");
-        Assert.Equal(IconCatalog.Count + 1, Enum.GetValues<IconName>().Length);
+        Assert.Equal(IconCatalog.Count, IconCatalog.All.Count);
         Assert.Equal(0, (int)IconName.None);
+
+        // Icons are 1..Count; former names come after them.
+        Assert.Equal(Enumerable.Range(1, IconCatalog.Count), IconCatalog.All.Select(i => (int)i.Name));
     }
 
     [Theory]
