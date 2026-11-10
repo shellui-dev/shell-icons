@@ -1,0 +1,25 @@
+{
+  "$schema": "../icon.schema.json",
+  "contributors": [
+    "AnnaSasDev",
+    "joffx",
+    "ericfennis",
+    "mittalyashu"
+  ],
+  "use-cases": [],
+  "tags": [
+    "$extends:banknote",
+    "$group:direction-up",
+    "deposit",
+    "earnings",
+    "income",
+    "in",
+    "credit",
+    "prepaid",
+    "growth",
+    "increase"
+  ],
+  "categories": [
+    "$extends:banknote"
+  ]
+}

@@ -366,3 +366,36 @@ public class IconAliasesTests
         Assert.Equal(new[] { "Box" }, aliases.Select(a => a.Pascal));
     }
 }
+
+public class FormerNameCatalogTests
+{
+    // Checks the vendored Lucide catalog: every former name of an icon we shipped before 1.x stays usable.
+    [Theory]
+    [InlineData("trash-2", "trash")]
+    [InlineData("filter", "funnel")]
+    [InlineData("circle-help", "circle-question-mark")]
+    public void VendoredSidecars_ListRenamedIconsAsDeprecatedAliases(string former, string current)
+    {
+        var path = Path.Combine(RepoRoot(), "catalog", "lucide", "icons", current + ".json");
+        var meta = IconMetadataReader.Read(File.ReadAllText(path));
+
+        Assert.Contains(former, meta.Aliases);
+        Assert.Contains(former, meta.DeprecatedAliases);
+    }
+
+    private static string RepoRoot()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "LUCIDE_VERSION.txt"))) dir = dir.Parent;
+        return dir?.FullName ?? throw new InvalidOperationException("Repo root not found.");
+    }
+
+    [Fact]
+    public void MissingKeys_AreEmpty()
+    {
+        var meta = IconMetadataReader.Read("""{ "tags": [] }""");
+        Assert.Empty(meta.Tags);
+        Assert.Empty(meta.Categories);
+        Assert.Empty(meta.Aliases);
+    }
+}

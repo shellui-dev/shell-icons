@@ -1,0 +1,25 @@
+{
+  "$schema": "../icon.schema.json",
+  "contributors": [
+    "AnnaSasDev",
+    "joffx",
+    "ericfennis",
+    "mittalyashu"
+  ],
+  "use-cases": [],
+  "tags": [
+    "$extends:banknote",
+    "$group:direction-down",
+    "withdraw",
+    "expense",
+    "out",
+    "payout",
+    "refund",
+    "debit",
+    "spending",
+    "decrease"
+  ],
+  "categories": [
+    "$extends:banknote"
+  ]
+}

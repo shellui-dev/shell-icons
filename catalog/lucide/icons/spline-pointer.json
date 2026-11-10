@@ -1,0 +1,23 @@
+{
+  "$schema": "../icon.schema.json",
+  "contributors": [
+    "kaleidosium",
+    "mittalyashu",
+    "ericfennis",
+    "jguddas",
+    "karsa-mistmere"
+  ],
+  "use-cases": [],
+  "tags": [
+    "$extends:spline",
+    "node",
+    "click",
+    "pointer",
+    "target",
+    "vector"
+  ],
+  "categories": [
+    "$extends:spline",
+    "cursors"
+  ]
+}

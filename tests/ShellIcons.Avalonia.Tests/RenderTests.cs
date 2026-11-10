@@ -110,7 +110,7 @@ public class RenderTests
         IconName[] names =
         [
             IconName.House, IconName.Search, IconName.Settings, IconName.CircleCheck, IconName.Heart,
-            IconName.ShoppingCart, IconName.Zap, IconName.Github, IconName.Twitter, IconName.SaveOff,
+            IconName.ShoppingCart, IconName.Zap, IconName.Funnel, IconName.Trash, IconName.SaveOff,
         ];
 
         var panel = new StackPanel { Spacing = 12, Margin = new global::Avalonia.Thickness(12) };
