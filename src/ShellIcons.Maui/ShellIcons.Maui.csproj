@@ -13,7 +13,7 @@
 
 		<IsPackable>true</IsPackable>
 		<PackageId>ShellIcons.Maui</PackageId>
-		<Description>Lucide-derived icons for .NET MAUI as native Path shapes. Typed controls, an IconName enum dispatcher and tag/alias metadata — generated from the same 1,555-icon catalog as ShellIcons.Blazor, with no runtime SVG parsing.</Description>
+		<Description>Lucide-derived icons for .NET MAUI as native Path shapes. Typed controls, an IconName enum dispatcher and tag/alias metadata — generated from the same 2,015-icon catalog as ShellIcons.Blazor, with no runtime SVG parsing.</Description>
 		<PackageTags>maui;icons;svg;lucide;xaml;shellui</PackageTags>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>

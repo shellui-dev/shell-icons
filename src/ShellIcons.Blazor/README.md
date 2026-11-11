@@ -2,7 +2,7 @@
 
 # ShellIcons.Blazor
 
-1,555 Lucide-derived icons for Blazor as inline `<svg>`: zero JS, zero required CSS, typed components that trim per icon. Docs: [shellicons.shellui.dev](https://shellicons.shellui.dev).
+2,015 Lucide-derived icons for Blazor as inline `<svg>`: zero JS, zero required CSS, typed components that trim per icon. Docs: [shellicons.shellui.dev](https://shellicons.shellui.dev).
 
 ## Install
 
@@ -20,7 +20,7 @@ Four ways to render an icon — all produce identical SVG. Only the first two ar
 |---|---|---|---|---|
 | **`<ChevronRightIcon />`** suffixed component | `@using ShellIcons` | ✅ No | ✅ Yes | **Default for markup.** Reads as an icon, full parameter binding. |
 | **`@Icon.ChevronRight()`** factory | `@using ShellIcons` | ✅ No | ✅ Yes | **Icons as values** — `RenderFragment` parameters, nav-item lists, configs. |
-| `<ShellIcon Name="chevron-right" />` dispatcher | `@using ShellIcons` | ✅ No | ❌ Roots all 1,555 | Names only known at runtime (CMS, JSON, markdown). |
+| `<ShellIcon Name="chevron-right" />` dispatcher | `@using ShellIcons` | ✅ No | ❌ Roots all 2,015 | Names only known at runtime (CMS, JSON, markdown). |
 | `<ChevronRight />` flat component | `@using ShellIcons.Icons` | ⚠️ Yes — RZ9985 on Badge, Table, Menu, Router, Card… | ✅ Yes | Icon-only files with no UI kit imported. |
 
 One `@using ShellIcons` in `_Imports.razor` gives you the first three.
@@ -71,7 +71,7 @@ Runtime lookup by kebab-case name, for icons whose identity is data-driven. Refe
 
 ### `<ChevronRight />` — flat components (⚠️ RZ9985 trap)
 
-`@using ShellIcons.Icons` puts all 1,555 unprefixed names into your tag lookup. With a UI kit that has `Badge`, `Table`, `Router`, etc., you get RZ9985 collisions.
+`@using ShellIcons.Icons` puts all 2,015 unprefixed names into your tag lookup. With a UI kit that has `Badge`, `Table`, `Router`, etc., you get RZ9985 collisions.
 
 **Workarounds that don't work** (verified by real integrators):
 

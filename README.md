@@ -14,7 +14,7 @@ Lucide-derived icons for **Blazor**, **.NET MAUI** and **Avalonia**.
 
 </div>
 
-- One catalog (1,555 Lucide 0.475.0 icons plus drop-in custom icons), the same names on every target
+- One catalog (2,015 Lucide 1.66.0 icons plus drop-in custom icons), the same names on every target
 - Native rendering per target: inline `<svg>` in Blazor, native `Path` shapes in MAUI, direct drawing in Avalonia, all converted at build time
 - Typed components per icon that trim, plus a dispatcher when the icon is a value
 - Zero JS and zero required CSS in Blazor
