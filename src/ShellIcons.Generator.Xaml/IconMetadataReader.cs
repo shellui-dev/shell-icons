@@ -47,6 +47,29 @@ internal static class IconMetadataReader
         return new IconMetadata(ReadArray(json, "tags"), ReadArray(json, "categories"), aliases, deprecated);
     }
 
+    /* Sidecars by icon id from catalog/lucide and catalog/custom (a custom one replaces Lucide's), with the tag groups
+       from catalog/lucide/groups/ applied. Keys of `files` are paths, values the JSON text. */
+    public static Dictionary<string, IconMetadata> ReadCatalog(IEnumerable<KeyValuePair<string, string>> files)
+    {
+        var icons = new Dictionary<string, IconMetadata>(StringComparer.Ordinal);
+        var groups = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
+
+        foreach (var file in files)
+        {
+            var path = file.Key.Replace('\\', '/');
+            if (!path.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) continue;
+
+            var slash = path.LastIndexOf('/');
+            var id = path.Substring(slash + 1, path.Length - slash - 1 - ".json".Length);
+            var meta = Read(file.Value);
+
+            if (path.Contains("/catalog/lucide/groups/")) groups[id] = meta.Tags;
+            else if (path.Contains("/catalog/custom/") || !icons.ContainsKey(id)) icons[id] = meta;
+        }
+
+        return ResolveDirectives(icons, groups);
+    }
+
     /* Lucide 1.x metadata shares tags: "$extends:alarm-clock" copies another icon's tags (or categories)
        and "$group:check" copies a tag group from groups/. Expands both; unknown targets are dropped. */
     public static Dictionary<string, IconMetadata> ResolveDirectives(

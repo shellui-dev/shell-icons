@@ -70,7 +70,7 @@ internal static class XamlCatalog
 
     public static XamlIcon[] Read(SourceProductionContext ctx, ImmutableArray<SourceFile> files)
     {
-        var metadata = ReadMetadata(files);
+        var metadata = IconMetadataReader.ReadCatalog(files.Select(f => new KeyValuePair<string, string>(f.Path, f.Content)));
 
         var resolved = new Dictionary<string, XamlIcon>(StringComparer.Ordinal);
         foreach (var f in files.Where(f => f.Path.EndsWith(".svg", StringComparison.OrdinalIgnoreCase)))
@@ -120,26 +120,6 @@ internal static class XamlCatalog
     /// <summary>Former names that get their own enum member and control (<c>Trash2</c> → <c>Trash</c>).</summary>
     public static IReadOnlyList<IconAlias> Aliases(XamlIcon[] icons) =>
         IconAliases.Resolve(icons.Select(i => new AliasSource(i.Kebab, i.Pascal, i.Meta.Aliases, i.Meta.DeprecatedAliases)), new[] { "None" });
-
-    /* Sidecars by icon id (a custom one replaces Lucide's), with Lucide 1.x's "$extends:" and "$group:"
-       tag directives expanded; the tag groups come from catalog/lucide/groups/. */
-    private static Dictionary<string, IconMetadata> ReadMetadata(ImmutableArray<SourceFile> files)
-    {
-        var icons = new Dictionary<string, IconMetadata>(StringComparer.Ordinal);
-        var groups = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
-
-        foreach (var f in files.Where(f => f.Path.EndsWith(".json", StringComparison.OrdinalIgnoreCase)))
-        {
-            var path = f.Path.Replace('\\', '/');
-            var id = Path.GetFileNameWithoutExtension(path);
-            var meta = IconMetadataReader.Read(f.Content);
-
-            if (path.Contains("/catalog/lucide/groups/")) groups[id] = meta.Tags;
-            else if (path.Contains("/catalog/custom/") || !icons.ContainsKey(id)) icons[id] = meta;
-        }
-
-        return IconMetadataReader.ResolveDirectives(icons, groups);
-    }
 
     private static string ResolvePack(string path) =>
         path.Replace('\\', '/').Contains("/catalog/custom/") ? "custom" : "lucide";
