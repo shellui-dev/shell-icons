@@ -9,9 +9,9 @@ using ShellIcons.Generator.Xaml;
 
 namespace ShellIcons.Generator;
 
-/* Emits typed components, their {Name}Icon aliases, the ShellIcon dispatcher and the Icon factory
-   from catalog/lucide and catalog/custom SVGs. A custom icon overrides a Lucide one of the same name.
-   Names the JSON sidecars list as aliases (an icon's former names) render that icon too. */
+/* Emits typed components, their {Name}Icon aliases, the ShellIcon dispatcher, the Icon factory and
+   IconCatalog from catalog/lucide and catalog/custom SVGs. A custom icon overrides a Lucide one of the
+   same name. Names the JSON sidecars list as aliases (an icon's former names) render that icon too. */
 [Generator]
 public sealed class IconGenerator : IIncrementalGenerator
 {
@@ -58,27 +58,13 @@ public sealed class IconGenerator : IIncrementalGenerator
             .Where(d => !string.IsNullOrEmpty(d.KebabName) && !string.IsNullOrEmpty(d.InnerMarkup))
             .Collect();
 
-        // Only aliases are read from the sidecars; tags and categories are for the XAML catalog.
+        // Icon sidecars and Lucide's tag groups: aliases, tags and categories.
         var sidecars = context.AdditionalTextsProvider
-            .Where(t => t.Path.EndsWith(".json", System.StringComparison.OrdinalIgnoreCase) && IsIconSidecar(t.Path))
-            .Select((text, ct) => new Sidecar(Path.GetFileNameWithoutExtension(text.Path), IconMetadataReader.Read(text.GetText(ct)?.ToString() ?? string.Empty)))
-            .Where(x => x.Meta.Aliases.Count > 0)
+            .Where(t => t.Path.EndsWith(".json", System.StringComparison.OrdinalIgnoreCase))
+            .Select((text, ct) => new KeyValuePair<string, string>(text.Path, text.GetText(ct)?.ToString() ?? string.Empty))
             .Collect();
 
         context.RegisterSourceOutput(definitions.Combine(sidecars), (ctx, input) => EmitAll(ctx, input.Left, input.Right));
-    }
-
-    private sealed class Sidecar
-    {
-        public Sidecar(string id, IconMetadata meta) { Id = id; Meta = meta; }
-        public string Id { get; }
-        public IconMetadata Meta { get; }
-    }
-
-    private static bool IsIconSidecar(string path)
-    {
-        var normalized = path.Replace('\\', '/');
-        return normalized.Contains("/catalog/lucide/icons/") || normalized.Contains("/catalog/custom/icons/");
     }
 
     private static string ResolvePack(string path)
@@ -89,7 +75,7 @@ public sealed class IconGenerator : IIncrementalGenerator
         return "lucide";
     }
 
-    private static void EmitAll(SourceProductionContext ctx, ImmutableArray<IconDefinition> defs, ImmutableArray<Sidecar> sidecars)
+    private static void EmitAll(SourceProductionContext ctx, ImmutableArray<IconDefinition> defs, ImmutableArray<KeyValuePair<string, string>> sidecars)
     {
         var resolved = new Dictionary<string, IconDefinition>();
 
@@ -110,8 +96,7 @@ public sealed class IconGenerator : IIncrementalGenerator
 
         var ordered = resolved.Values.OrderBy(d => d.KebabName, System.StringComparer.Ordinal).ToArray();
 
-        var metaById = new Dictionary<string, IconMetadata>(System.StringComparer.Ordinal);
-        foreach (var s in sidecars) metaById[s.Id] = s.Meta;
+        var metaById = IconMetadataReader.ReadCatalog(sidecars);
         var aliases = IconAliases.Resolve(ordered
             .Select(d => metaById.TryGetValue(d.KebabName, out var m)
                 ? new AliasSource(d.KebabName, d.PascalName, m.Aliases, m.DeprecatedAliases)
@@ -125,6 +110,7 @@ public sealed class IconGenerator : IIncrementalGenerator
         ctx.AddSource("SuffixedIcons.g.cs", SourceText.From(EmitSuffixedComponents(ctx, ordered, aliases), Encoding.UTF8));
         ctx.AddSource("ShellIcon.g.cs", SourceText.From(EmitDispatcher(ordered, DispatcherAliases(ordered, metaById)), Encoding.UTF8));
         ctx.AddSource("Icon.g.cs", SourceText.From(EmitFactoryDispatcher(ordered, aliases), Encoding.UTF8));
+        ctx.AddSource("IconCatalog.g.cs", SourceText.From(BlazorCatalogEmitter.Emit(ordered, metaById, aliases), Encoding.UTF8));
     }
 
     // Every alias id the dispatcher accepts, including spelling variants that get no C# name of their own.
