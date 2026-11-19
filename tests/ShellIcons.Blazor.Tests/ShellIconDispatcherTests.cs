@@ -12,7 +12,7 @@ public class ShellIconDispatcherTests : IDisposable
     [Fact]
     public void KnownName_RendersMatchingShape()
     {
-        // chevron-right's shape data — matches the Lucide 0.475.0 source.
+        // chevron-right's shape data, as in the vendored Lucide source.
         var path = _ctx.RenderComponent<ShellIcon>(p => p.Add(x => x.Name, "chevron-right"))
             .Find("svg > path");
 
@@ -32,7 +32,7 @@ public class ShellIconDispatcherTests : IDisposable
     [Fact]
     public void Names_ContainsFullCatalog()
     {
-        // Lucide 0.475.0 ships 1500+ icons. Assert we're well over the minimum.
+        // The vendored Lucide catalog has 2000+ icons. Assert we're well over the minimum.
         Assert.True(ShellIcon.Names.Count > 1000,
             $"Expected >1000 icons in the catalog, got {ShellIcon.Names.Count}");
 

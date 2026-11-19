@@ -41,6 +41,18 @@ public class ControlTests
         Assert.Null(icon.StrokeGeometry);
     }
 
+#pragma warning disable CS0618 // former names are [Obsolete]
+    [AvaloniaFact]
+    public void FormerName_ShowsTheRenamedIcon_UnderItsCurrentName()
+    {
+        var dispatched = new Icon { Kind = IconName.Trash2 };
+        Assert.Equal(IconName.Trash, dispatched.IconName);
+        Assert.Same(new Icons.Trash().StrokeGeometry, dispatched.StrokeGeometry);
+
+        Assert.Equal(IconName.Trash, new Icons.Trash2().IconName);
+    }
+#pragma warning restore CS0618
+
     [AvaloniaFact]
     public void TypedAndDispatcher_ShareTheSameCachedGeometry()
     {

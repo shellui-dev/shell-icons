@@ -24,6 +24,7 @@
   <ItemGroup>
     <Compile Include="..\..\src\ShellIcons.Generator\SvgParser.cs" LinkBase="Generator" />
     <Compile Include="..\..\src\ShellIcons.Generator\Naming.cs" LinkBase="Generator" />
+    <Compile Include="..\..\src\ShellIcons.Generator\IconAliases.cs" LinkBase="Generator" />
     <Compile Include="..\..\src\ShellIcons.Generator.Xaml\PathNormalizer.cs" LinkBase="Generator.Xaml" />
     <Compile Include="..\..\src\ShellIcons.Generator.Xaml\SvgShapeReader.cs" LinkBase="Generator.Xaml" />
     <Compile Include="..\..\src\ShellIcons.Generator.Xaml\IconMetadataReader.cs" LinkBase="Generator.Xaml" />

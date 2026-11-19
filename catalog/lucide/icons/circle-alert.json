@@ -4,16 +4,18 @@
     "colebemis",
     "ericfennis"
   ],
+  "use-cases": [],
   "tags": [
-    "warning",
-    "alert",
-    "danger",
-    "exclamation mark"
+    "$group:exclamation-mark"
   ],
   "categories": [
     "notifications"
   ],
   "aliases": [
-    "alert-circle"
+    {
+      "name": "alert-circle",
+      "deprecationReason": "alias.name",
+      "deprecated": true
+    }
   ]
 }

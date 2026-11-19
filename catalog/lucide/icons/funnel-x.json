@@ -1,0 +1,25 @@
+{
+  "$schema": "../icon.schema.json",
+  "contributors": [
+    "gubser",
+    "ericfennis",
+    "lukedukeus",
+    "jguddas",
+    "karsa-mistmere"
+  ],
+  "use-cases": [],
+  "tags": [
+    "$extends:funnel",
+    "$group:x"
+  ],
+  "categories": [
+    "$extends:funnel"
+  ],
+  "aliases": [
+    {
+      "name": "filter-x",
+      "deprecated": true,
+      "deprecationReason": "alias.name"
+    }
+  ]
+}

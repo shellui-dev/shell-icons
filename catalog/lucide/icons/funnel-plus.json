@@ -1,0 +1,18 @@
+{
+  "$schema": "../icon.schema.json",
+  "contributors": [
+    "gubser",
+    "ericfennis",
+    "lukedukeus",
+    "jguddas",
+    "karsa-mistmere"
+  ],
+  "use-cases": [],
+  "tags": [
+    "$extends:funnel",
+    "$group:plus"
+  ],
+  "categories": [
+    "$extends:funnel"
+  ]
+}

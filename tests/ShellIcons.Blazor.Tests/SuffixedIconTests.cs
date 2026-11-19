@@ -30,6 +30,7 @@ public class SuffixedIconTests : IDisposable
         var suffixed = typeof(IconCore).Assembly.GetTypes()
             .Where(t => t.Namespace == "ShellIcons" && t.Name.EndsWith("Icon") && t.IsSubclassOf(typeof(IconCore)))
             .Where(t => t != typeof(ShellIcon))
+            .Where(t => t.Name == t.BaseType!.Name + "Icon") // former names derive from the renamed icon
             .ToArray();
 
         // `shell` has no alias: ShellIcon is the dispatcher.

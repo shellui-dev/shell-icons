@@ -1,14 +1,17 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using ShellIcons.Generator.Xaml;
 
 namespace ShellIcons.Generator;
 
 /* Emits typed components, their {Name}Icon aliases, the ShellIcon dispatcher and the Icon factory
-   from catalog/lucide and catalog/custom SVGs. A custom icon overrides a Lucide one of the same name. */
+   from catalog/lucide and catalog/custom SVGs. A custom icon overrides a Lucide one of the same name.
+   Names the JSON sidecars list as aliases (an icon's former names) render that icon too. */
 [Generator]
 public sealed class IconGenerator : IIncrementalGenerator
 {
@@ -55,7 +58,27 @@ public sealed class IconGenerator : IIncrementalGenerator
             .Where(d => !string.IsNullOrEmpty(d.KebabName) && !string.IsNullOrEmpty(d.InnerMarkup))
             .Collect();
 
-        context.RegisterSourceOutput(definitions, EmitAll);
+        // Only aliases are read from the sidecars; tags and categories are for the XAML catalog.
+        var sidecars = context.AdditionalTextsProvider
+            .Where(t => t.Path.EndsWith(".json", System.StringComparison.OrdinalIgnoreCase) && IsIconSidecar(t.Path))
+            .Select((text, ct) => new Sidecar(Path.GetFileNameWithoutExtension(text.Path), IconMetadataReader.Read(text.GetText(ct)?.ToString() ?? string.Empty)))
+            .Where(x => x.Meta.Aliases.Count > 0)
+            .Collect();
+
+        context.RegisterSourceOutput(definitions.Combine(sidecars), (ctx, input) => EmitAll(ctx, input.Left, input.Right));
+    }
+
+    private sealed class Sidecar
+    {
+        public Sidecar(string id, IconMetadata meta) { Id = id; Meta = meta; }
+        public string Id { get; }
+        public IconMetadata Meta { get; }
+    }
+
+    private static bool IsIconSidecar(string path)
+    {
+        var normalized = path.Replace('\\', '/');
+        return normalized.Contains("/catalog/lucide/icons/") || normalized.Contains("/catalog/custom/icons/");
     }
 
     private static string ResolvePack(string path)
@@ -66,7 +89,7 @@ public sealed class IconGenerator : IIncrementalGenerator
         return "lucide";
     }
 
-    private static void EmitAll(SourceProductionContext ctx, System.Collections.Immutable.ImmutableArray<IconDefinition> defs)
+    private static void EmitAll(SourceProductionContext ctx, ImmutableArray<IconDefinition> defs, ImmutableArray<Sidecar> sidecars)
     {
         var resolved = new Dictionary<string, IconDefinition>();
 
@@ -87,12 +110,62 @@ public sealed class IconGenerator : IIncrementalGenerator
 
         var ordered = resolved.Values.OrderBy(d => d.KebabName, System.StringComparer.Ordinal).ToArray();
 
-        foreach (var d in ordered)
-            ctx.AddSource($"Icons/{d.PascalName}.g.cs", SourceText.From(EmitTypedComponent(d), Encoding.UTF8));
+        var metaById = new Dictionary<string, IconMetadata>(System.StringComparer.Ordinal);
+        foreach (var s in sidecars) metaById[s.Id] = s.Meta;
+        var aliases = IconAliases.Resolve(ordered
+            .Select(d => metaById.TryGetValue(d.KebabName, out var m)
+                ? new AliasSource(d.KebabName, d.PascalName, m.Aliases, m.DeprecatedAliases)
+                : new AliasSource(d.KebabName, d.PascalName, new string[0], new string[0])));
 
-        ctx.AddSource("SuffixedIcons.g.cs", SourceText.From(EmitSuffixedComponents(ctx, ordered), Encoding.UTF8));
-        ctx.AddSource("ShellIcon.g.cs", SourceText.From(EmitDispatcher(ordered), Encoding.UTF8));
-        ctx.AddSource("Icon.g.cs", SourceText.From(EmitFactoryDispatcher(ordered), Encoding.UTF8));
+        // Hint names use the kebab id: they're compared ignoring case, and letter-s and letters differ only by case.
+        foreach (var d in ordered)
+            ctx.AddSource($"Icons/{d.KebabName}.g.cs", SourceText.From(EmitTypedComponent(d), Encoding.UTF8));
+
+        ctx.AddSource("IconAliases.g.cs", SourceText.From(EmitAliasComponents(aliases), Encoding.UTF8));
+        ctx.AddSource("SuffixedIcons.g.cs", SourceText.From(EmitSuffixedComponents(ctx, ordered, aliases), Encoding.UTF8));
+        ctx.AddSource("ShellIcon.g.cs", SourceText.From(EmitDispatcher(ordered, DispatcherAliases(ordered, metaById)), Encoding.UTF8));
+        ctx.AddSource("Icon.g.cs", SourceText.From(EmitFactoryDispatcher(ordered, aliases), Encoding.UTF8));
+    }
+
+    // Every alias id the dispatcher accepts, including spelling variants that get no C# name of their own.
+    private static List<KeyValuePair<string, string>> DispatcherAliases(IconDefinition[] defs, Dictionary<string, IconMetadata> metaById)
+    {
+        var ids = new HashSet<string>(defs.Select(d => d.KebabName), System.StringComparer.Ordinal);
+        var result = new List<KeyValuePair<string, string>>();
+        foreach (var d in defs)
+        {
+            if (!metaById.TryGetValue(d.KebabName, out var meta)) continue;
+            foreach (var alias in meta.Aliases)
+            {
+                if (ids.Add(alias)) result.Add(new KeyValuePair<string, string>(alias, d.KebabName));
+            }
+        }
+        return result;
+    }
+
+    private static string ObsoleteAttribute(IconAlias alias, string replacement) =>
+        alias.Deprecated
+            ? $"[global::System.Obsolete(\"{IconAliases.ObsoleteMessage(alias, replacement)}\")]\n"
+            : string.Empty;
+
+    private static string EmitAliasComponents(IReadOnlyList<IconAlias> aliases)
+    {
+        // Subclasses of the renamed icon, so markup written against an older Lucide keeps compiling.
+        var sb = new StringBuilder();
+        sb.AppendLine("// <auto-generated/>");
+        sb.AppendLine("#nullable enable");
+        sb.AppendLine();
+        sb.AppendLine($"namespace {IconsNamespace};");
+
+        foreach (var a in aliases)
+        {
+            sb.AppendLine();
+            sb.AppendLine($"/// <summary>Former name of <see cref=\"{a.TargetPascal}\"/> (<c>{a.Kebab}</c> → <c>{a.TargetKebab}</c>).</summary>");
+            sb.Append(ObsoleteAttribute(a, a.TargetPascal));
+            sb.AppendLine($"public sealed class {a.Pascal} : {a.TargetPascal} {{ }}");
+        }
+
+        return sb.ToString();
     }
 
     private static string EmitTypedComponent(IconDefinition d)
@@ -118,7 +191,7 @@ public sealed class IconGenerator : IIncrementalGenerator
             """;
     }
 
-    private static string EmitSuffixedComponents(SourceProductionContext ctx, IconDefinition[] defs)
+    private static string EmitSuffixedComponents(SourceProductionContext ctx, IconDefinition[] defs, IReadOnlyList<IconAlias> aliases)
     {
         /* The suffix keeps names clear of UI-kit components (RZ9985) under a single @using ShellIcons.
            Empty subclasses, so they cost metadata only. */
@@ -142,10 +215,22 @@ public sealed class IconGenerator : IIncrementalGenerator
             sb.AppendLine($"public sealed class {suffixed} : global::{IconsNamespace}.{d.PascalName} {{ }}");
         }
 
+        foreach (var a in aliases)
+        {
+            var suffixed = a.Pascal + "Icon";
+            var target = a.TargetPascal + "Icon";
+            if (ReservedRootNames.Contains(suffixed) || ReservedRootNames.Contains(target)) continue;
+
+            sb.AppendLine();
+            sb.AppendLine($"/// <summary>Former name of <see cref=\"{target}\"/> (<c>{a.Kebab}</c> → <c>{a.TargetKebab}</c>).</summary>");
+            sb.Append(ObsoleteAttribute(a, target));
+            sb.AppendLine($"public sealed class {suffixed} : global::{IconsNamespace}.{a.TargetPascal} {{ }}");
+        }
+
         return sb.ToString();
     }
 
-    private static string EmitDispatcher(IconDefinition[] defs)
+    private static string EmitDispatcher(IconDefinition[] defs, List<KeyValuePair<string, string>> aliases)
     {
         var sb = new StringBuilder();
         sb.AppendLine("// <auto-generated/>");
@@ -161,7 +246,7 @@ public sealed class IconGenerator : IIncrementalGenerator
         sb.AppendLine("/// Referencing it keeps the whole catalog; prefer the typed components when the name is known.</summary>");
         sb.AppendLine("public sealed class ShellIcon : IconCore");
         sb.AppendLine("{");
-        sb.AppendLine("    /// <summary>Kebab-case name of the icon to render (e.g. <c>\"chevron-right\"</c>).</summary>");
+        sb.AppendLine("    /// <summary>Kebab-case name of the icon to render (e.g. <c>\"chevron-right\"</c>). Former Lucide names work too.</summary>");
         sb.AppendLine("    [Parameter] public string Name { get; set; } = string.Empty;");
         sb.AppendLine();
         sb.AppendLine("    /// <inheritdoc />");
@@ -176,10 +261,19 @@ public sealed class IconGenerator : IIncrementalGenerator
         }
         sb.AppendLine("    };");
         sb.AppendLine();
+        sb.AppendLine("    // Former names, e.g. \"trash-2\" → \"trash\".");
+        sb.AppendLine("    private static readonly Dictionary<string, string> _aliases = new(StringComparer.Ordinal)");
+        sb.AppendLine("    {");
+        foreach (var a in aliases)
+            sb.AppendLine($"        [\"{a.Key}\"] = \"{a.Value}\",");
+        sb.AppendLine("    };");
+        sb.AppendLine();
         sb.AppendLine("    /// <inheritdoc />");
         sb.AppendLine("    protected override void EmitChildren(RenderTreeBuilder builder, int seq)");
         sb.AppendLine("    {");
-        sb.AppendLine("        if (Name is not null && _catalog.TryGetValue(Name, out var markup))");
+        sb.AppendLine("        if (Name is null) return;");
+        sb.AppendLine("        if (_catalog.TryGetValue(Name, out var markup)");
+        sb.AppendLine("            || (_aliases.TryGetValue(Name, out var current) && _catalog.TryGetValue(current, out markup)))");
         sb.AppendLine("            builder.AddMarkupContent(seq, markup);");
         sb.AppendLine("    }");
         sb.AppendLine();
@@ -189,7 +283,7 @@ public sealed class IconGenerator : IIncrementalGenerator
         return sb.ToString();
     }
 
-    private static string EmitFactoryDispatcher(IconDefinition[] defs)
+    private static string EmitFactoryDispatcher(IconDefinition[] defs, IReadOnlyList<IconAlias> aliases)
     {
         /* `Icon`, not `Icons`: the plural is taken by the ShellIcons.Icons namespace.
            Each method references only its own component, so unused icons still trim. */
@@ -218,6 +312,16 @@ public sealed class IconGenerator : IIncrementalGenerator
             sb.AppendLine();
             sb.AppendLine($"    /// <summary>Renders the <c>{d.KebabName}</c> icon (source: {d.SourcePack}).</summary>");
             sb.AppendLine($"    public static RenderFragment {d.PascalName}(string size = \"24\", double strokeWidth = 2, bool absoluteStroke = false, string? cssClass = null, string? title = null, global::System.Collections.Generic.IReadOnlyDictionary<string, object>? additionalAttributes = null) =>");
+            sb.AppendLine($"        global::ShellIcons.IconFragment.Create<{typeRef}>(size, strokeWidth, absoluteStroke, cssClass, title, additionalAttributes);");
+        }
+
+        foreach (var a in aliases)
+        {
+            var typeRef = $"global::{IconsNamespace}.{a.TargetPascal}";
+            sb.AppendLine();
+            sb.AppendLine($"    /// <summary>Former name of <see cref=\"{a.TargetPascal}\"/> (<c>{a.Kebab}</c> → <c>{a.TargetKebab}</c>).</summary>");
+            if (a.Deprecated) sb.Append("    ").Append(ObsoleteAttribute(a, a.TargetPascal + "()"));
+            sb.AppendLine($"    public static RenderFragment {a.Pascal}(string size = \"24\", double strokeWidth = 2, bool absoluteStroke = false, string? cssClass = null, string? title = null, global::System.Collections.Generic.IReadOnlyDictionary<string, object>? additionalAttributes = null) =>");
             sb.AppendLine($"        global::ShellIcons.IconFragment.Create<{typeRef}>(size, strokeWidth, absoluteStroke, cssClass, title, additionalAttributes);");
         }
 

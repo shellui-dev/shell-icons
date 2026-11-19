@@ -2,15 +2,14 @@
   "$schema": "../icon.schema.json",
   "contributors": [
     "karsa-mistmere",
-    "danielbayley"
+    "danielbayley",
+    "jamiemlaw"
   ],
+  "use-cases": [],
   "tags": [
-    "lighting",
-    "household",
-    "home",
-    "furniture"
+    "$extends:lamp"
   ],
   "categories": [
-    "home"
+    "$extends:lamp"
   ]
 }

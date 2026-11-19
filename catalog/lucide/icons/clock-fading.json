@@ -1,0 +1,14 @@
+{
+  "$schema": "../icon.schema.json",
+  "contributors": [
+    "colebemis",
+    "jguddas"
+  ],
+  "use-cases": [],
+  "tags": [
+    "$extends:clock"
+  ],
+  "categories": [
+    "$extends:clock"
+  ]
+}

@@ -4,7 +4,8 @@
 
 .DESCRIPTION
     Downloads the Lucide GitHub source archive for the pinned tag and copies the
-    `icons/` directory into `catalog/lucide/icons/`. Idempotent: safe to re-run.
+    `icons/` directory into `catalog/lucide/icons/`, and the tag groups the icon
+    metadata refers to (`$group:…`) into `catalog/lucide/groups/`. Idempotent: safe to re-run.
 
 .EXAMPLE
     ./scripts/sync-lucide.ps1
@@ -21,6 +22,7 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $versionFile = Join-Path $repoRoot 'LUCIDE_VERSION.txt'
 $catalogDir = Join-Path $repoRoot 'catalog\lucide'
 $iconsDir = Join-Path $catalogDir 'icons'
+$groupsDir = Join-Path $catalogDir 'groups'
 
 if (-not $Version) {
     if (-not (Test-Path $versionFile)) {
@@ -54,6 +56,15 @@ try {
 
     Write-Host "  Copying icons/"
     Copy-Item -Path (Join-Path $srcIcons '*') -Destination $iconsDir -Recurse -Force
+
+    # Lucide 1.x metadata pulls shared tags from groups/ ("$group:check"); older tags have none.
+    if (Test-Path $groupsDir) { Remove-Item $groupsDir -Recurse -Force }
+    $srcGroups = Join-Path $extracted.FullName 'groups'
+    if (Test-Path $srcGroups) {
+        New-Item -ItemType Directory -Path $groupsDir -Force | Out-Null
+        Write-Host "  Copying groups/"
+        Copy-Item -Path (Join-Path $srcGroups '*.json') -Destination $groupsDir -Force
+    }
 
     $svgCount = (Get-ChildItem -Path $iconsDir -Filter '*.svg' | Measure-Object).Count
     Write-Host "  Done: $svgCount icons vendored." -ForegroundColor Green

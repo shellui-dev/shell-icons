@@ -27,7 +27,9 @@ public class Icon : IconView
 
     private void Load(IconName kind)
     {
-        var (stroke, fill) = IconData.Get(kind);
-        SetData(kind, stroke, fill);
+        // A former name (Trash2) shows the renamed icon and reports its current name.
+        var current = IconData.Resolve(kind);
+        var (stroke, fill) = IconData.Get(current);
+        SetData(current, stroke, fill);
     }
 }

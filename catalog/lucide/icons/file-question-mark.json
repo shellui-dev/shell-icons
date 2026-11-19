@@ -1,0 +1,24 @@
+{
+  "$schema": "../icon.schema.json",
+  "contributors": [
+    "karsa-mistmere",
+    "danielbayley",
+    "jguddas"
+  ],
+  "use-cases": [],
+  "tags": [
+    "$extends:file",
+    "$group:question-mark",
+    "readme"
+  ],
+  "categories": [
+    "$extends:file"
+  ],
+  "aliases": [
+    {
+      "name": "file-question",
+      "deprecationReason": "alias.name",
+      "deprecated": true
+    }
+  ]
+}

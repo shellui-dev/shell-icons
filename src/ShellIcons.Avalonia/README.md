@@ -2,7 +2,7 @@
 
 # ShellIcons.Avalonia (preview)
 
-Lucide-derived icons for Avalonia, from the same 1,555-icon catalog as `ShellIcons.Blazor` and
+Lucide-derived icons for Avalonia, from the same 2,015-icon catalog as `ShellIcons.Blazor` and
 `ShellIcons.Maui`. Docs: [shellicons.shellui.dev/docs/avalonia/getting-started](https://shellicons.shellui.dev/docs/avalonia/getting-started).
 
 ## Install

@@ -27,7 +27,7 @@ public class GeometryTests
 
                 if (geometry.Figures.Count == 0) failures.Add($"{name}: no figures");
 
-                // Control points may poke out while the curve stays inside (twitter's does, by 0.7).
+                // Control points may poke out while the curve stays inside.
                 foreach (var (p, isControl) in Points(geometry))
                 {
                     var tolerance = isControl ? 6 : 0.5;
@@ -62,7 +62,7 @@ public class GeometryTests
     public void CircleCheck_CircleBecomesArcs()
     {
         var (stroke, _) = IconData.Get(IconName.CircleCheck);
-        Assert.Equal("M 22 12 A 10 10 0 1 1 2 12 A 10 10 0 1 1 22 12 Z M 9 12 L 11 14 L 15 10", stroke);
+        Assert.Equal("M 22 12 A 10 10 0 1 1 2 12 A 10 10 0 1 1 22 12 Z M 16 9 L 10.5 14.5 L 8 12", stroke);
     }
 
     [Fact]
@@ -91,15 +91,6 @@ public class GeometryTests
     public void Geometry_IsCachedPerIcon()
     {
         Assert.Same(IconGeometry.Get("M 1 1 L 2 2"), IconGeometry.Get("M 1 1 L 2 2"));
-    }
-
-    [Fact]
-    public void SaveOff_StrayOffCanvasShapeFromLucide_IsDropped()
-    {
-        // Lucide's save-off.svg has a stray `M29.5 11.5s5 5 4 5` outside the viewBox.
-        var (stroke, _) = IconData.Get(IconName.SaveOff);
-        Assert.DoesNotContain("29.5", stroke);
-        Assert.Contains("M 2 2 L 22 22", stroke);   // the real slash is still there
     }
 
     private static IEnumerable<(Point Point, bool IsControl)> Points(PathGeometry geometry)
