@@ -80,6 +80,23 @@ Runtime lookup by kebab-case name, for icons whose identity is data-driven. Refe
 
 Use the suffixed components instead, or fully qualify: `<ShellIcons.Icons.ChevronRight />`.
 
+## Shared defaults
+
+Wrap a toolbar, menu or whole layout in `<IconDefaults>` to set `Size`, `StrokeWidth`, `AbsoluteStroke` or a `Class` for every icon inside it:
+
+```razor
+<IconDefaults Size="16" StrokeWidth="1.5" Class="shrink-0">
+    <SaveIcon />
+    <CopyIcon />
+    <TrashIcon Size="20" />   @* a value on the icon wins *@
+</IconDefaults>
+```
+
+- A value set on an icon always wins, even when it equals the built-in default (`Size="24"`).
+- Nested `<IconDefaults>` override the outer ones for what they set and inherit the rest.
+- Classes add up: the defaults' classes come first, then the icon's own `Class`.
+- The dispatcher and the factory follow the defaults too. `Icon.Save()` arguments left at their default values (`size: "24"`, `strokeWidth: 2`) don't override them.
+
 ## Using icons inside component libraries
 
 **Buttons and similar containers — just put the icon in the content.** No `Icon` slot needed; the component's CSS sizes child SVGs (shadcn's `[&_svg]:size-4`):
