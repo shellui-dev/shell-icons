@@ -48,6 +48,47 @@ jobs:
       - name: List produced packages
         run: ls -la nupkgs/
 
+      # The Avalonia tests render every icon through Skia; keep the images to look at.
+      - name: Upload Avalonia renders
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: avalonia-renders-linux
+          path: tests/ShellIcons.Avalonia.Tests/bin/Release/net10.0/renders/
+          if-no-files-found: ignore
+
+  # The Avalonia package runs on every desktop OS; the Linux run is in build-test above.
+  avalonia:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: windows
+          - os: macos-latest
+            name: macos
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Test
+        run: dotnet test tests/ShellIcons.Avalonia.Tests --configuration Release --verbosity normal
+        env:
+          ContinuousIntegrationBuild: true
+
+      - name: Upload Avalonia renders
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: avalonia-renders-${{ matrix.name }}
+          path: tests/ShellIcons.Avalonia.Tests/bin/Release/net10.0/renders/
+          if-no-files-found: ignore
+
   # Windows builds every MAUI target (Android, iOS, Mac Catalyst, Windows); ubuntu lacks the workloads.
   maui:
     runs-on: windows-latest
