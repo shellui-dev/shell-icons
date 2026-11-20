@@ -82,8 +82,8 @@ Prerelease suffixes (`-alpha`, `-beta`, `-rc`) automatically mark the GitHub Rel
 
 In one PR:
 
-- [`Directory.Build.props`](Directory.Build.props) — set `<Version>` to the new version, e.g. `0.2.0-alpha`.
-- [`CHANGELOG.md`](CHANGELOG.md) — rename `## [Unreleased]` to `## [0.2.0-alpha] — YYYY-MM-DD` and add a fresh, empty `## [Unreleased]` above it.
+- [`Directory.Build.props`](Directory.Build.props) — set `<Version>` to the new version, e.g. `0.3.0-alpha`.
+- [`CHANGELOG.md`](CHANGELOG.md) — rename `## [Unreleased]` to `## [0.3.0-alpha] — YYYY-MM-DD` and add a fresh, empty `## [Unreleased]` above it.
 
 Merge it to `main`.
 
@@ -104,8 +104,8 @@ Should produce a `.nupkg` and `.snupkg` for each package. The MAUI steps need `d
 From an up-to-date `main`. The tag **must match** `<Version>` in `Directory.Build.props`, prefixed with `v` — the workflow refuses to publish if they disagree.
 
 ```bash
-git tag v0.2.0-alpha -m "ShellIcons 0.2.0-alpha"
-git push origin v0.2.0-alpha
+git tag v0.3.0-alpha -m "ShellIcons 0.3.0-alpha"
+git push origin v0.3.0-alpha
 ```
 
 ### 5. Approve the run
