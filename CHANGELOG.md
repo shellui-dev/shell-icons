@@ -35,6 +35,8 @@ The catalog moves from Lucide 0.475.0 to **Lucide 1.66.0**: 2,015 icons, 547 of 
 ### Fixed
 
 - Two icons whose names differ only by case (`letter-s` and `letters`) made both generators fail; generated files are now named by icon id.
+- **MAUI: large icons drew off-centre and clipped on Android.** MAUI moves a `Stretch.None` path whose bounds come near its view's edge, and it measured the 24-unit geometry against the view in device units, so a 64 px `zap` slid about 7 dp and lost its tip. Geometry is now built at the icon's size, with no transform.
+- **Arcs too small to reach their endpoint** (Lucide's `palette` has one) are scaled up as SVG requires. MAUI on Android dropped them, so `palette` drew only its dots.
 
 <details>
 <summary>All 69 renamed icons</summary>
