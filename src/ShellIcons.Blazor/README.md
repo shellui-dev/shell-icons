@@ -145,6 +145,26 @@ Without `Title` icons are decorative (`aria-hidden="true"`); with it they get `r
 <XIcon Title="Close dialog" />
 ```
 
+## Icon names and search
+
+`IconCatalog` lists every icon with its tags, categories and former names, for icon pickers, settings stored as strings, or tools that need the list:
+
+```csharp
+IconCatalog.TryParse("trash-2", out var id);   // "trash" (renamed in Lucide 1.x)
+IconCatalog.Get("house").Tags;                  // ["home", "living", "building", …]
+IconCatalog.Search("cart");                     // ids first, then aliases, tags and categories
+```
+
+`TryParse` accepts an id (`chevron-right`), a component name (`ChevronRight`) or a former name, and returns the id `<ShellIcon Name="…" />` takes. Each `IconInfo` also has the component `Name`, so `<ChevronRightIcon />` is `info.Name + "Icon"`.
+
+To publish the list as a file, serve `IconCatalog.ToJson()`:
+
+```csharp
+app.MapGet("/icons.json", () => Results.Content(IconCatalog.ToJson(), "application/json"));
+```
+
+The catalog holds metadata only; using it doesn't keep the icons themselves in a trimmed app.
+
 ## Licensing
 
 MIT. Lucide-derived icons are ISC; attribution is in `NOTICE.md` inside the package.

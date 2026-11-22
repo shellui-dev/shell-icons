@@ -320,6 +320,24 @@ public class IconMetadataReaderTests
     }
 
     [Fact]
+    public void ReadCatalog_PrefersCustomSidecars_AndAppliesGroups()
+    {
+        var files = new[]
+        {
+            new KeyValuePair<string, string>("/repo/catalog/custom/icons/zap.json", """{ "tags": ["custom", "$group:energy"] }"""),
+            new KeyValuePair<string, string>("/repo/catalog/lucide/icons/zap.json", """{ "tags": ["lucide"] }"""),
+            new KeyValuePair<string, string>(@"C:\repo\catalog\lucide\icons\house.json", """{ "tags": ["home"] }"""),
+            new KeyValuePair<string, string>("/repo/catalog/lucide/groups/energy.json", """{ "tags": ["power", "electric"] }"""),
+        };
+
+        var catalog = IconMetadataReader.ReadCatalog(files);
+
+        Assert.Equal(new[] { "house", "zap" }, catalog.Keys.OrderBy(k => k));
+        Assert.Equal(new[] { "custom", "power", "electric" }, catalog["zap"].Tags);
+        Assert.Equal(new[] { "home" }, catalog["house"].Tags);
+    }
+
+    [Fact]
     public void ResolveDirectives_SurvivesACycle()
     {
         var icons = new Dictionary<string, IconMetadata>
