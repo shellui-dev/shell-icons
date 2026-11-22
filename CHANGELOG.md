@@ -6,12 +6,15 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versio
 
 ## [Unreleased]
 
-The catalog moves from Lucide 0.475.0 to **Lucide 1.66.0**: 2,015 icons, 547 of them new. Lucide 1.x renamed 69 icons ShellIcons shipped and removed 18; renamed icons keep working under their old names.
+## [0.3.0-alpha] — 2026-11-22
+
+The catalog moves from Lucide 0.475.0 to **Lucide 1.66.0**: 2,015 icons, 547 of them new. Lucide 1.x renamed 69 icons ShellIcons shipped and removed 18; renamed icons keep working under their old names. Blazor also gets `<IconDefaults>` and the same `IconCatalog` as the XAML packages.
 
 ### Added
 
 - **547 new icons** from Lucide 1.x, on every target.
 - **Former names stay usable.** Every name Lucide lists as an alias of an icon (usually its name before a rename) gets the same forms as the icon: `<Trash2Icon />`, `<Trash2 />`, `@Icon.Trash2()`, `<ShellIcon Name="trash-2" />` in Blazor, and `IconName.Trash2` plus `<icons:Trash2 />` in MAUI and Avalonia. They render the renamed icon, and the ones Lucide marks deprecated are `[Obsolete]` with a message naming the replacement, so the compiler points at what to change. `IconName.Trash2` is hidden from IntelliSense, and the `Icon` control reports `IconName.Trash`.
+- **Blazor: `<IconDefaults>`** sets `Size`, `StrokeWidth`, `AbsoluteStroke` and a `Class` for every icon inside it, so a toolbar or menu sizes its icons once. A value set on an icon wins, nested defaults override outer ones, and classes add up. The dispatcher and the `Icon.*` factory follow the defaults too.
 - **Blazor: `IconCatalog`**, like the one in the MAUI and Avalonia packages: every icon's id, component name, tags, categories and former names. `TryParse` resolves ids, component names and former names (`trash-2` → `trash`), `Search` ranks ids, then aliases, tags and categories, and `ToJson()` gives the list as JSON to serve as an `icons.json` file.
 - `IconCatalog` tags and categories include the ones Lucide 1.x shares between icons (`$extends:` and `$group:` in its metadata), so `Search("done")` finds `circle-check`, `alarm-clock-check` and the rest of the check group.
 
@@ -23,6 +26,7 @@ The catalog moves from Lucide 0.475.0 to **Lucide 1.66.0**: 2,015 icons, 547 of 
 - Typed controls in `ShellIcons.Maui.Icons` and `ShellIcons.Avalonia.Icons` are no longer `sealed`; former names derive from them.
 - `IconCatalog.TryParse` matches exact case first, so `LetterS` and `Letters` (two icons whose names differ only by case) each resolve to themselves.
 - `scripts/sync-lucide.ps1` also copies Lucide's tag groups into `catalog/lucide/groups/`.
+- CI runs the Avalonia tests on Windows and macOS as well as Linux, and keeps each OS's rendered icons as an artifact.
 
 ### Removed
 
@@ -31,6 +35,8 @@ The catalog moves from Lucide 0.475.0 to **Lucide 1.66.0**: 2,015 icons, 547 of 
 ### Fixed
 
 - Two icons whose names differ only by case (`letter-s` and `letters`) made both generators fail; generated files are now named by icon id.
+- **MAUI: large icons drew off-centre and clipped on Android.** MAUI moves a `Stretch.None` path whose bounds come near its view's edge, and it measured the 24-unit geometry against the view in device units, so a 64 px `zap` slid about 7 dp and lost its tip. Geometry is now built at the icon's size, with no transform.
+- **Arcs too small to reach their endpoint** (Lucide's `palette` has one) are scaled up as SVG requires. MAUI on Android dropped them, so `palette` drew only its dots.
 
 <details>
 <summary>All 69 renamed icons</summary>
