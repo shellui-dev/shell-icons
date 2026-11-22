@@ -14,6 +14,11 @@
     <Version>0.3.0-alpha</Version>
   </PropertyGroup>
 
+  <!-- Packing compares each package's public API with this published version and fails on a break. -->
+  <PropertyGroup>
+    <PackageValidationBaselineVersion>0.3.0-alpha</PackageValidationBaselineVersion>
+  </PropertyGroup>
+
   <PropertyGroup>
     <Authors>shellui-dev</Authors>
     <Company>ShellUI</Company>

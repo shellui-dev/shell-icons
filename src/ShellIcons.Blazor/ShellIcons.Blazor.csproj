@@ -6,6 +6,7 @@
 
     <IsPackable>true</IsPackable>
     <PackageId>ShellIcons.Blazor</PackageId>
+    <EnablePackageValidation>true</EnablePackageValidation>
     <Description>Lucide-derived SVG icons for Blazor. Zero JS, zero CSS, tree-shakeable typed components auto-generated from the full 2,015-icon Lucide catalog.</Description>
   </PropertyGroup>
 
