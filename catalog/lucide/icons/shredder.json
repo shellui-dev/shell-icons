@@ -1,0 +1,36 @@
+{
+  "$schema": "../icon.schema.json",
+  "contributors": [
+    "Alirashidy",
+    "colebemis",
+    "danielbayley",
+    "ericfennis",
+    "jguddas",
+    "karsa-mistmere"
+  ],
+  "use-cases": [],
+  "tags": [
+    "$group:minus",
+    "file",
+    "paper",
+    "tear",
+    "cut",
+    "destroy",
+    "document",
+    "destruction",
+    "secure",
+    "security",
+    "confidential",
+    "data",
+    "trash",
+    "dispose",
+    "disposal",
+    "information",
+    "waste",
+    "permanent"
+  ],
+  "categories": [
+    "files",
+    "security"
+  ]
+}

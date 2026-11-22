@@ -3,8 +3,10 @@
   "contributors": [
     "mittalyashu",
     "danielbayley",
-    "karsa-mistmere"
+    "karsa-mistmere",
+    "jamiemlaw"
   ],
+  "use-cases": [],
   "tags": [
     "unlimited",
     "forever",
@@ -12,6 +14,7 @@
     "math"
   ],
   "categories": [
-    "multimedia"
+    "multimedia",
+    "math"
   ]
 }

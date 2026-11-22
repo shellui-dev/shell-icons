@@ -1,0 +1,19 @@
+{
+  "$schema": "../icon.schema.json",
+  "contributors": [
+    "python2911",
+    "UsamaKhan",
+    "jguddas"
+  ],
+  "use-cases": [],
+  "tags": [
+    "$extends:id-card",
+    "id-card",
+    "id-card-lanyard",
+    "employee",
+    "gate-pass"
+  ],
+  "categories": [
+    "$extends:id-card"
+  ]
+}

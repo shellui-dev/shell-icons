@@ -31,7 +31,7 @@ public class GeneratedIconTests : IDisposable
         Assert.Equal("12", circle.GetAttribute("cx"));
         Assert.Equal("12", circle.GetAttribute("cy"));
         Assert.Equal("10", circle.GetAttribute("r"));
-        Assert.Equal("m9 12 2 2 4-4", path.GetAttribute("d"));
+        Assert.Equal("m16 9-5.5 5.5L8 12", path.GetAttribute("d"));
     }
 
     [Fact]

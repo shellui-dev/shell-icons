@@ -7,7 +7,7 @@
 
     <IsPackable>true</IsPackable>
     <PackageId>ShellIcons.Avalonia</PackageId>
-    <Description>Lucide-derived icons for Avalonia, drawn straight to the DrawingContext. Typed controls, an IconName enum dispatcher and tag/alias metadata — generated from the same 1,555-icon catalog as ShellIcons.Blazor, with no runtime SVG parsing.</Description>
+    <Description>Lucide-derived icons for Avalonia, drawn straight to the DrawingContext. Typed controls, an IconName enum dispatcher and tag/alias metadata — generated from the same 2,015-icon catalog as ShellIcons.Blazor, with no runtime SVG parsing.</Description>
     <PackageTags>avalonia;icons;svg;lucide;xaml;shellui</PackageTags>
     <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
@@ -25,7 +25,7 @@
   <!-- The .json sidecars feed IconCatalog; ShellIconsTarget tells the generator which namespace to emit. -->
   <ItemGroup>
     <CompilerVisibleProperty Include="ShellIconsTarget" />
-    <AdditionalFiles Include="..\..\catalog\lucide\icons\*.svg;..\..\catalog\lucide\icons\*.json" />
+    <AdditionalFiles Include="..\..\catalog\lucide\icons\*.svg;..\..\catalog\lucide\icons\*.json;..\..\catalog\lucide\groups\*.json" />
     <AdditionalFiles Include="..\..\catalog\custom\icons\*.svg;..\..\catalog\custom\icons\*.json" />
   </ItemGroup>
 

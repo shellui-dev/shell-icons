@@ -35,6 +35,18 @@ public class ControlTests
         Assert.Null(((Path)icon.Content).Data);
     }
 
+#pragma warning disable CS0618 // former names are [Obsolete]
+    [Fact]
+    public void FormerName_ShowsTheRenamedIcon_UnderItsCurrentName()
+    {
+        var dispatched = new Icon { Name = IconName.Trash2 };
+        Assert.Equal(IconName.Trash, dispatched.IconName);
+        Assert.Same(((Path)new Icons.Trash().Content).Data, ((Path)dispatched.Content).Data);
+
+        Assert.Equal(IconName.Trash, new Icons.Trash2().IconName);
+    }
+#pragma warning restore CS0618
+
     [Fact]
     public void TypedAndDispatcher_ShareTheSameCachedGeometry()
     {
@@ -119,7 +131,7 @@ public class ControlTests
     public void EveryIcon_HasATypedControl()
     {
         var typed = typeof(IconView).Assembly.GetTypes()
-            .Where(t => t.Namespace == "ShellIcons.Maui.Icons" && t.IsSubclassOf(typeof(IconView)))
+            .Where(t => t.Namespace == "ShellIcons.Maui.Icons" && t.BaseType == typeof(IconView)) // former names derive from the renamed icon
             .ToList();
 
         Assert.Equal(IconCatalog.Count, typed.Count);

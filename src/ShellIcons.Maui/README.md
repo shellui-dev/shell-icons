@@ -2,7 +2,7 @@
 
 # ShellIcons.Maui (preview)
 
-Lucide-derived icons for .NET MAUI as native `Path` shapes, from the same 1,555-icon catalog as
+Lucide-derived icons for .NET MAUI as native `Path` shapes, from the same 2,015-icon catalog as
 `ShellIcons.Blazor`. Docs: [shellicons.shellui.dev/docs/maui/getting-started](https://shellicons.shellui.dev/docs/maui/getting-started).
 
 ## Install

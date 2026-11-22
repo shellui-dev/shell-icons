@@ -1,0 +1,21 @@
+{
+  "$schema": "../icon.schema.json",
+  "contributors": [
+    "colebemis",
+    "ericfennis",
+    "danielbayley",
+    "karsa-mistmere",
+    "Ayberkyvs",
+    "jguddas"
+  ],
+  "use-cases": [],
+  "tags": [
+    "$group:minus",
+    "unlike",
+    "unfavorite",
+    "damage"
+  ],
+  "categories": [
+    "social"
+  ]
+}

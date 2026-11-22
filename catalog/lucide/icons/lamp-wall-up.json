@@ -2,16 +2,16 @@
   "$schema": "../icon.schema.json",
   "contributors": [
     "karsa-mistmere",
-    "ericfennis"
+    "ericfennis",
+    "jamiemlaw"
   ],
+  "use-cases": [],
   "tags": [
-    "lighting",
-    "household",
-    "wall",
-    "home",
-    "furniture"
+    "$extends:lamp",
+    "$group:direction-up",
+    "wall"
   ],
   "categories": [
-    "home"
+    "$extends:lamp"
   ]
 }

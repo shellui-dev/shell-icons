@@ -1,0 +1,24 @@
+{
+  "$schema": "../icon.schema.json",
+  "contributors": [
+    "colebemis",
+    "ahtohbi4",
+    "ericfennis",
+    "Andreto",
+    "csandman",
+    "karsa-mistmere",
+    "danielbayley",
+    "jordan808",
+    "LienMaas",
+    "jguddas",
+    "AnnaSasDev"
+  ],
+  "use-cases": [],
+  "tags": [
+    "$extends:truck",
+    "electric"
+  ],
+  "categories": [
+    "$extends:truck"
+  ]
+}
