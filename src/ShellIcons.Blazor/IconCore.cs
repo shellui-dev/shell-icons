@@ -14,6 +14,11 @@ public abstract class IconCore : ComponentBase
     private static int _idCounter;
     private string? _titleId;
 
+    // Which of the defaultable parameters the icon set itself; the rest come from an enclosing IconDefaults.
+    private bool _sizeSet;
+    private bool _strokeWidthSet;
+    private bool _absoluteStrokeSet;
+
     /// <summary>Width and height of the rendered SVG. Any valid SVG size string: <c>"24"</c>, <c>"1.5em"</c>, <c>"100%"</c>. Default <c>"24"</c>.</summary>
     [Parameter] public string Size { get; set; } = "24";
 
@@ -36,6 +41,16 @@ public abstract class IconCore : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)]
     public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    [CascadingParameter] private IconDefaultValues? Defaults { get; set; }
+
+    private string EffectiveSize => _sizeSet ? Size : Defaults?.Size ?? Size;
+
+    private double EffectiveStrokeWidth => _strokeWidthSet ? StrokeWidth : Defaults?.StrokeWidth ?? StrokeWidth;
+
+    private bool EffectiveAbsoluteStroke => _absoluteStrokeSet ? AbsoluteStroke : Defaults?.AbsoluteStroke ?? AbsoluteStroke;
+
+    private string? EffectiveClass => IconDefaultValues.JoinClasses(Defaults?.Class, Class);
+
     /// <summary>Kebab-case catalog name for this icon (e.g. <c>"chevron-right"</c>). Used by the dispatcher lookup.</summary>
     protected abstract string IconName { get; }
 
@@ -43,14 +58,26 @@ public abstract class IconCore : ComponentBase
     protected abstract void EmitChildren(RenderTreeBuilder builder, int seq);
 
     /// <inheritdoc />
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        // Every render passes the icon's full parameter set, so absence means "not set here".
+        _sizeSet = parameters.TryGetValue<string>(nameof(Size), out _);
+        _strokeWidthSet = parameters.TryGetValue<double>(nameof(StrokeWidth), out _);
+        _absoluteStrokeSet = parameters.TryGetValue<bool>(nameof(AbsoluteStroke), out _);
+        return base.SetParametersAsync(parameters);
+    }
+
+    /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        var strokeStr = ComputeStrokeWidth();
+        var size = EffectiveSize;
+        var strokeStr = ComputeStrokeWidth(size);
+        var cssClass = EffectiveClass;
 
         builder.OpenElement(0, "svg");
         builder.AddAttribute(1, "xmlns", "http://www.w3.org/2000/svg");
-        builder.AddAttribute(2, "width", Size);
-        builder.AddAttribute(3, "height", Size);
+        builder.AddAttribute(2, "width", size);
+        builder.AddAttribute(3, "height", size);
         builder.AddAttribute(4, "viewBox", "0 0 24 24");
         builder.AddAttribute(5, "fill", "none");
         builder.AddAttribute(6, "stroke", "currentColor");
@@ -58,8 +85,8 @@ public abstract class IconCore : ComponentBase
         builder.AddAttribute(8, "stroke-linecap", "round");
         builder.AddAttribute(9, "stroke-linejoin", "round");
 
-        if (!string.IsNullOrWhiteSpace(Class))
-            builder.AddAttribute(10, "class", Class);
+        if (cssClass is not null)
+            builder.AddAttribute(10, "class", cssClass);
 
         if (Title is not null)
         {
@@ -107,17 +134,18 @@ public abstract class IconCore : ComponentBase
         }
     }
 
-    private string ComputeStrokeWidth()
+    private string ComputeStrokeWidth(string size)
     {
-        if (!AbsoluteStroke)
-            return StrokeWidth.ToString(CultureInfo.InvariantCulture);
+        var strokeWidth = EffectiveStrokeWidth;
+        if (!EffectiveAbsoluteStroke)
+            return strokeWidth.ToString(CultureInfo.InvariantCulture);
 
-        if (double.TryParse(Size, NumberStyles.Float, CultureInfo.InvariantCulture, out var s) && s > 0)
+        if (double.TryParse(size, NumberStyles.Float, CultureInfo.InvariantCulture, out var s) && s > 0)
         {
-            var scaled = StrokeWidth * 24d / s;
+            var scaled = strokeWidth * 24d / s;
             return scaled.ToString("0.###", CultureInfo.InvariantCulture);
         }
 
-        return StrokeWidth.ToString(CultureInfo.InvariantCulture);
+        return strokeWidth.ToString(CultureInfo.InvariantCulture);
     }
 }
