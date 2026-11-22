@@ -6,6 +6,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versio
 
 ## [Unreleased]
 
+### Changed
+
+- **The public API is checked against the last release.** Packing each package now compares it with the version in `PackageValidationBaselineVersion` (0.3.0-alpha) on NuGet and fails if a public type or member was removed or changed. CI packs on every pull request, so a break shows up there.
+
 ## [0.3.0-alpha] — 2026-11-22
 
 The catalog moves from Lucide 0.475.0 to **Lucide 1.66.0**: 2,015 icons, 547 of them new. Lucide 1.x renamed 69 icons ShellIcons shipped and removed 18; renamed icons keep working under their old names. Blazor also gets `<IconDefaults>` and the same `IconCatalog` as the XAML packages.
