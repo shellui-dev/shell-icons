@@ -87,6 +87,8 @@ In one PR:
 
 Merge it to `main`.
 
+**Breaking changes.** Packing compares each package's public API with the last release (`PackageValidationBaselineVersion` in `Directory.Build.props`) and fails with `CP0002` and similar errors when something public was removed or changed. If the break is intended (before 1.0, or for a major version), list it in the CHANGELOG and record it by packing the affected project with `-p:ApiCompatGenerateSuppressionFile=true`. That writes `CompatibilitySuppressions.xml` next to the `.csproj`; commit it with the change.
+
 ### 3. Sanity check locally (optional)
 
 ```bash
@@ -119,6 +121,10 @@ Pushing the tag triggers `.github/workflows/release.yml`. Because of the `releas
 
 - **NuGet.org**: [ShellIcons.Blazor](https://www.nuget.org/packages/ShellIcons.Blazor), [ShellIcons.Maui](https://www.nuget.org/packages/ShellIcons.Maui), [ShellIcons.Avalonia](https://www.nuget.org/packages/ShellIcons.Avalonia) — each should show the new version within a couple of minutes (indexing) and be installable after ~10 minutes.
 - **GitHub Release**: <https://github.com/shellui-dev/shell-icons/releases> — auto-generated release notes based on merged PRs since the last tag, with `.nupkg` + `.snupkg` attached.
+
+### 7. Move the API baseline
+
+Once the packages are on NuGet, set `PackageValidationBaselineVersion` in [`Directory.Build.props`](Directory.Build.props) to the version you just released and delete any `CompatibilitySuppressions.xml` files: the breaks they recorded are now part of the baseline. Do it in its own PR, so later changes are checked against what users actually have.
 
 ## What the workflow does, step by step
 
