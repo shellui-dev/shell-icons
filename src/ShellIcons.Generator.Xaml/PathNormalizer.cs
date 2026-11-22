@@ -115,8 +115,19 @@ internal static class PathNormalizer
                     var rotation = reader.ReadNumber();
                     var large = reader.ReadFlag();
                     var sweep = reader.ReadFlag();
+                    var (x0, y0) = (cx, cy);
                     cx = ox + reader.ReadNumber(); cy = oy + reader.ReadNumber();
-                    Arc(sb, rx, ry, rotation, large, sweep, cx, cy);
+
+                    // SVG rules (F.6.2): same endpoints draw nothing, a zero radius is a straight line.
+                    if (x0 == cx && y0 == cy) break;
+                    if (rx == 0 || ry == 0)
+                    {
+                        Emit(sb, 'L', cx, cy);
+                        break;
+                    }
+
+                    var scale = RadiusScale(rx, ry, rotation, x0 - cx, y0 - cy);
+                    Arc(sb, CeilRadius(rx * scale), CeilRadius(ry * scale), rotation, large, sweep, cx, cy);
                     break;
                 }
 
@@ -219,6 +230,20 @@ internal static class PathNormalizer
         sb.Append(command);
         foreach (var c in coords) sb.Append(' ').Append(Num(c));
     }
+
+    /* Radii too small to reach the endpoint are scaled up until they do (SVG F.6.6). Browsers, WinUI and
+       Avalonia do this themselves; MAUI on Android drops the arc, so it's baked into the data. */
+    private static double RadiusScale(double rx, double ry, double rotationDegrees, double dx, double dy)
+    {
+        var phi = rotationDegrees * Math.PI / 180;
+        var x1 = Math.Cos(phi) * dx / 2 + Math.Sin(phi) * dy / 2;
+        var y1 = -Math.Sin(phi) * dx / 2 + Math.Cos(phi) * dy / 2;
+        var lambda = x1 * x1 / (rx * rx) + y1 * y1 / (ry * ry);
+        return lambda > 1 ? Math.Sqrt(lambda) : 1;
+    }
+
+    // Rounded up, so the 3-decimal output never leaves a radius just short of the endpoint.
+    private static double CeilRadius(double r) => Math.Ceiling(Math.Round(r * 1000, 6)) / 1000;
 
     private static void Arc(StringBuilder sb, double rx, double ry, double rotation, bool large, bool sweep, double x, double y)
     {

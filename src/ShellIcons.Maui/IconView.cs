@@ -36,6 +36,8 @@ public class IconView : ContentView
 
     private readonly Path _stroke;
     private Path? _fill;
+    private string? _strokeData;
+    private string? _fillData;
 
     /// <summary>Creates an empty icon; call <see cref="SetData"/> to give it a shape.</summary>
     protected IconView()
@@ -105,7 +107,9 @@ public class IconView : ContentView
     protected void SetData(IconName iconName, string strokeData, string? fillData)
     {
         IconName = iconName;
-        _stroke.Data = IconGeometry.Get(strokeData);
+        _strokeData = strokeData;
+        _fillData = fillData;
+        _stroke.Data = IconGeometry.Get(strokeData, GridScale);
 
         if (fillData is null)
         {
@@ -125,8 +129,10 @@ public class IconView : ContentView
             ApplyMetrics();
             ApplyColor();
         }
-        _fill.Data = IconGeometry.Get(fillData);
+        _fill.Data = IconGeometry.Get(fillData, GridScale);
     }
+
+    private double GridScale => Size / GridUnits;
 
     private static Path CreatePath() => new()
     {
@@ -143,18 +149,21 @@ public class IconView : ContentView
     private void ApplyMetrics()
     {
         var size = Size;
-        var scale = size / GridUnits;
         var thickness = EffectiveStrokeThickness;
 
         WidthRequest = size;
         HeightRequest = size;
 
+        /* The geometry is built at the icon's size rather than scaled by a transform: MAUI shifts a
+           Stretch.None path whose bounds come within half a stroke of the view's edge, comparing the
+           untransformed geometry with the view in device units, which moved large icons off-centre. */
+        _stroke.Data = IconGeometry.Get(_strokeData, GridScale);
+        if (_fill is not null) _fill.Data = IconGeometry.Get(_fillData, GridScale);
+
         foreach (var path in Paths())
         {
             path.WidthRequest = size;
             path.HeightRequest = size;
-            // The transform scales the geometry, not the pen, so the stroke is scaled separately.
-            path.RenderTransform = new ScaleTransform(scale, scale);
             path.StrokeThickness = thickness;
         }
     }

@@ -41,7 +41,40 @@ public class PathNormalizerTests
     [Fact]
     public void ArcFlags_WithSeparators()
     {
-        Assert.Equal("M 0 0 A 3 4 30 1 0 5 6", N("M0 0A3 4 30 1 0 5 6"));
+        Assert.Equal("M 0 0 A 30 40 30 1 0 5 6", N("M0 0A30 40 30 1 0 5 6"));
+    }
+
+    [Fact]
+    public void Arc_TooSmallToReachTheEndpoint_IsScaledUp()
+    {
+        // Lucide's palette: radius 1 between points 20 apart; SVG scales it to 10.
+        Assert.Equal("M 12 22 A 10 10 0 0 1 12 2", N("M12 22a1 1 0 0 1 0-20"));
+    }
+
+    [Fact]
+    public void Arc_ScaledRadius_RoundsUp_SoItStillReaches()
+    {
+        // Half the chord is sqrt(2) ≈ 1.41421; rounding down to 1.414 would fall short.
+        Assert.Equal("M 0 0 A 1.415 1.415 0 0 1 2 2", N("M0 0A1 1 0 0 1 2 2"));
+    }
+
+    [Fact]
+    public void Arc_ScalesBothRadiiByTheSameFactor_Rotated()
+    {
+        var normalized = N("M0 0A3 4 30 1 0 5 6");
+        var parts = normalized.Split(' ');
+        var rx = double.Parse(parts[4], System.Globalization.CultureInfo.InvariantCulture);
+        var ry = double.Parse(parts[5], System.Globalization.CultureInfo.InvariantCulture);
+
+        Assert.InRange(rx / ry, 0.749, 0.751);
+        Assert.True(rx > 3 && ry > 4);
+    }
+
+    [Fact]
+    public void Arc_WithZeroRadius_IsALine_AndToTheSamePoint_IsDropped()
+    {
+        Assert.Equal("M 1 1 L 5 5", N("M1 1A0 3 0 0 1 5 5"));
+        Assert.Equal("M 1 1 L 2 2", N("M1 1A3 3 0 0 1 1 1L2 2"));
     }
 
     [Fact]

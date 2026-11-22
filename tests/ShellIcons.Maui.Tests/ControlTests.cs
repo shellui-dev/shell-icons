@@ -75,13 +75,38 @@ public class ControlTests
     [Fact]
     public void Size_ScalesGeometryAndStroke()
     {
-        var icon = new Icons.Zap { Size = 16 };
+        var icon = new Icons.ChevronRight { Size = 48 };
         var path = (Path)icon.Content;
 
-        Assert.Equal(16, icon.WidthRequest);
-        var scale = Assert.IsType<ScaleTransform>(path.RenderTransform);
-        Assert.Equal(16d / 24, scale.ScaleX, 6);
-        Assert.Equal(2 * 16d / 24, path.StrokeThickness, 6);
+        Assert.Equal(48, icon.WidthRequest);
+        Assert.Null(path.RenderTransform);
+        // chevron-right starts at (9, 18) on the 24-unit grid.
+        Assert.Equal(new Point(18, 36), ((PathGeometry)path.Data).Figures[0].StartPoint);
+        Assert.Equal(4, path.StrokeThickness, 6);
+    }
+
+    [Fact]
+    public void ChangingSize_RebuildsTheGeometry_AndSharesItPerSize()
+    {
+        var icon = new Icons.ChevronRight { Size = 16 };
+        var small = ((Path)icon.Content).Data;
+
+        icon.Size = 32;
+        var large = ((Path)icon.Content).Data;
+
+        Assert.NotSame(small, large);
+        Assert.Equal(new Point(12, 24), ((PathGeometry)large).Figures[0].StartPoint);
+        Assert.Same(large, ((Path)new Icons.ChevronRight { Size = 32 }.Content).Data);
+    }
+
+    [Fact]
+    public void FilledShapes_AreScaledToo()
+    {
+        var name = IconCatalog.All.First(i => IconData.Get(i.Name).Fill is not null).Name;
+        var icon = new Icon { Name = name, Size = 48 };
+
+        var fill = (Path)((Grid)icon.Content).Children[1];
+        Assert.Same(IconGeometry.Get(IconData.Get(name).Fill, 2), fill.Data);
     }
 
     [Fact]

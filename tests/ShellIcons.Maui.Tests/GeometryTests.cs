@@ -87,6 +87,42 @@ public class GeometryTests
         Assert.Equal(new Point(4, 4), arc.Point);
     }
 
+    /* MAUI fits a Stretch.None path into its view: when the path's bounds come within half a stroke of
+       an edge it moves the path (by the whole half-stroke on both axes in 10.0.20). Geometry and stroke
+       scale together, so at the default stroke this holds at every size if it holds on the 24 grid. */
+    [Fact]
+    public void EveryIcon_KeepsHalfADefaultStrokeFromTheEdges()
+    {
+        const double halfStroke = 1;
+        var failures = new List<string>();
+
+        foreach (var info in IconCatalog.All)
+        {
+            var (stroke, fill) = IconData.Get(info.Name);
+            foreach (var data in new[] { stroke, fill }.Where(d => !string.IsNullOrEmpty(d)))
+            {
+                var path = new Microsoft.Maui.Graphics.PathF();
+                IconGeometry.Parse(data!).AppendPath(path);
+                var b = path.GetBoundsByFlattening(1); // what MAUI measures
+
+                if (b.Left < halfStroke - 0.01 || b.Top < halfStroke - 0.01 || b.Right > 24 - halfStroke + 0.01 || b.Bottom > 24 - halfStroke + 0.01)
+                    failures.Add($"{info.Id}: {b}");
+            }
+        }
+
+        Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures.Take(25)));
+    }
+
+    [Fact]
+    public void Parse_AtAScale_ScalesPointsAndArcRadii_NotRotation()
+    {
+        var arc = (ArcSegment)IconGeometry.Parse("M 0 0 A 2 3 45 1 1 4 4", 2).Figures[0].Segments[0];
+
+        Assert.Equal(new Size(4, 6), arc.Size);
+        Assert.Equal(45, arc.RotationAngle);
+        Assert.Equal(new Point(8, 8), arc.Point);
+    }
+
     [Fact]
     public void Geometry_IsCachedPerIcon()
     {
