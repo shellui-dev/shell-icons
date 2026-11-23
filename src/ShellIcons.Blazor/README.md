@@ -157,11 +157,14 @@ IconCatalog.Search("cart");                     // ids first, then aliases, tags
 
 `TryParse` accepts an id (`chevron-right`), a component name (`ChevronRight`) or a former name, and returns the id `<ShellIcon Name="…" />` takes. Each `IconInfo` also has the component `Name`, so `<ChevronRightIcon />` is `info.Name + "Icon"`.
 
-To publish the list as a file, serve `IconCatalog.ToJson()`:
+The same list ships as a static file, so a page script, a docs site or an AI tool can fetch it without any code on your side:
 
-```csharp
-app.MapGet("/icons.json", () => Results.Content(IconCatalog.ToJson(), "application/json"));
+```js
+const icons = await fetch('_content/ShellIcons.Blazor/icons.json').then(r => r.json());
+// [{ "id": "trash", "name": "Trash", "source": "lucide", "tags": […], "categories": […], "aliases": ["trash-2"] }, …]
 ```
+
+It's served like any static asset from a Razor class library, with `app.MapStaticAssets()` or `app.UseStaticFiles()`. `IconCatalog.ToJson()` returns the same JSON if you'd rather serve it at your own URL.
 
 The catalog holds metadata only; using it doesn't keep the icons themselves in a trimmed app.
 

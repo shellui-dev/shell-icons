@@ -6,6 +6,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versio
 
 ## [Unreleased]
 
+### Added
+
+- **Blazor: `icons.json`** ships in the package as a static asset at `_content/ShellIcons.Blazor/icons.json`: every icon's id, component name, tags, categories and former names, the same JSON as `IconCatalog.ToJson()`. Pages, docs sites and tools can fetch the icon list without any server code. A test fails if the file drifts from the catalog.
+
 ### Changed
 
 - **The public API is checked against the last release.** Packing each package now compares it with the version in `PackageValidationBaselineVersion` (0.3.0-alpha) on NuGet and fails if a public type or member was removed or changed. CI packs on every pull request, so a break shows up there.

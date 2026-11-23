@@ -68,6 +68,7 @@ try {
 
     $svgCount = (Get-ChildItem -Path $iconsDir -Filter '*.svg' | Measure-Object).Count
     Write-Host "  Done: $svgCount icons vendored." -ForegroundColor Green
+    Write-Host '  Next: refresh the Blazor icons.json with: $env:SHELLICONS_UPDATE_ICONS_JSON=1; dotnet test tests/ShellIcons.Blazor.Tests'
 
     Set-Content -Path $versionFile -Value "$Version`n" -Encoding utf8 -NoNewline
 }
