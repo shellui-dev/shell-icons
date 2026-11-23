@@ -1,0 +1,60 @@
+name: MAUI iOS check
+
+# Runs samples/ShellIcons.Maui.Check on an iOS Simulator and keeps the screenshots (issue #4).
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/ShellIcons.Maui/**'
+      - 'src/ShellIcons.Generator.Xaml/**'
+      - 'samples/ShellIcons.Maui.Check/**'
+      - '.github/workflows/maui-ios.yml'
+  workflow_dispatch:
+
+jobs:
+  ios-simulator:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Select the newest Xcode
+        run: |
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)"
+          xcodebuild -version
+
+      - name: Install the MAUI iOS workload
+        run: dotnet workload install maui-ios
+
+      - name: Build for the simulator
+        run: dotnet build samples/ShellIcons.Maui.Check -f net10.0-ios -c Debug -p:RuntimeIdentifier=iossimulator-arm64
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # idb drives the tap; the screenshots don't need it.
+      - name: Install idb
+        continue-on-error: true
+        run: |
+          brew tap facebook/fb
+          brew install idb-companion
+          pip install fb-idb
+
+      - name: Run on the simulator
+        run: |
+          app=$(find samples/ShellIcons.Maui.Check/bin/Debug/net10.0-ios -name 'ShellIcons.Maui.Check.app' -type d | head -1)
+          OUT=screenshots bash samples/ShellIcons.Maui.Check/run-ios-simulator.sh "$app"
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maui-ios-screenshots
+          path: screenshots/
+          if-no-files-found: ignore

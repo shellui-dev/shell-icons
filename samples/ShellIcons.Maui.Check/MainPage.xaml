@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="https://shellicons.dev/maui"
+             x:Class="ShellIcons.Maui.Check.MainPage"
+             BackgroundColor="{DynamicResource PageColor}">
+    <ScrollView>
+        <VerticalStackLayout Padding="20,60,20,20" Spacing="12">
+            <Label x:Name="Header" FontSize="18" TextColor="{DynamicResource TextColor}" />
+
+            <Label Text="Sizes 16 / 24 / 48, color from a DynamicResource" TextColor="Gray" />
+            <HorizontalStackLayout Spacing="10">
+                <icons:House Size="16" Color="{DynamicResource IconColor}" />
+                <icons:Search Size="16" Color="{DynamicResource IconColor}" />
+                <icons:House Color="{DynamicResource IconColor}" />
+                <icons:Search Color="{DynamicResource IconColor}" />
+                <icons:House Size="48" Color="{DynamicResource IconColor}" />
+                <icons:Search Size="48" Color="{DynamicResource IconColor}" />
+            </HorizontalStackLayout>
+
+            <Label Text="Fine detail at 16 / 24 / 48: Fingerprint, Settings" TextColor="Gray" />
+            <HorizontalStackLayout Spacing="10">
+                <icons:Fingerprint Size="16" Color="{DynamicResource IconColor}" />
+                <icons:Settings Size="16" Color="{DynamicResource IconColor}" />
+                <icons:Fingerprint Color="{DynamicResource IconColor}" />
+                <icons:Settings Color="{DynamicResource IconColor}" />
+                <icons:Fingerprint Size="48" Color="{DynamicResource IconColor}" />
+                <icons:Settings Size="48" Color="{DynamicResource IconColor}" />
+            </HorizontalStackLayout>
+
+            <Label Text="Dispatcher, fixed colors, arcs and filled shapes" TextColor="Gray" />
+            <HorizontalStackLayout Spacing="10">
+                <icons:Icon Name="CircleCheck" Size="40" Color="Green" />
+                <icons:Icon Name="TriangleAlert" Size="40" Color="Orange" />
+                <icons:Icon Name="Heart" Size="40" Color="Crimson" />
+                <icons:Icon Name="ChartScatter" Size="40" Color="RoyalBlue" />
+                <icons:Icon Name="Palette" Size="40" Color="RoyalBlue" />
+            </HorizontalStackLayout>
+
+            <Label Text="Former names Trash2, Filter, CircleHelp, then Trash" TextColor="Gray" />
+            <HorizontalStackLayout Spacing="10">
+                <icons:Icon Name="Trash2" Size="40" Color="{DynamicResource IconColor}" />
+                <icons:Icon Name="Filter" Size="40" Color="{DynamicResource IconColor}" />
+                <icons:Icon Name="CircleHelp" Size="40" Color="{DynamicResource IconColor}" />
+                <icons:Trash Size="40" Color="{DynamicResource IconColor}" />
+            </HorizontalStackLayout>
+
+            <Label Text="Bounds: zap 64 at stroke 1, 2, 3, then square 64" TextColor="Gray" />
+            <HorizontalStackLayout Spacing="10">
+                <icons:Zap Size="64" StrokeThickness="1" Color="Black" BackgroundColor="LightGray" />
+                <icons:Zap Size="64" Color="Black" BackgroundColor="LightGray" />
+                <icons:Zap Size="64" StrokeThickness="3" Color="Black" BackgroundColor="LightGray" />
+                <icons:Square Size="64" Color="Black" BackgroundColor="LightGray" />
+            </HorizontalStackLayout>
+
+            <Label Text="Tap the icon: the tap must reach the border" TextColor="Gray" />
+            <Border AutomationId="TapTarget" Padding="12" Stroke="Gray" HorizontalOptions="Start">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTapped" />
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout Spacing="8">
+                    <icons:X Size="32" Color="{DynamicResource IconColor}" Title="Close" AutomationId="TapIcon" />
+                    <Label x:Name="TapLabel" AutomationId="TapLabel" Text="Not tapped" TextColor="{DynamicResource TextColor}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
